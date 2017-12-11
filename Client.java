@@ -3,19 +3,15 @@ import java.util.Vector;
 
 public class Client {
   private Server server;
-  private SessionHandler id;
 
   public Client(Server server) {
     this.server = server;
-    id = SessionHandler.getInstance();
     mainMenu();
   }
 
   private void login() {
-    id.fetchUsername();
-    id.fetchUserCredentials();
-
-    Session sess = id.login(server);
+    SessionHandler id = new SessionHandler(server);
+    Session sess = id.login();
     if (sess == null)
       System.out.println("Unable to sign in");
     else {
@@ -25,10 +21,8 @@ public class Client {
   }
 
   private void signUp() {
-    id.fetchUsername();
-    id.fetchUserCredentials();
-
-    if (id.signUp(server))
+    SessionHandler id = new SessionHandler(server);
+    if (id.signUp())
       System.out.println("User \"" + id.getUsername() + "\" registered successfully");
     else
       System.out.println("Unable to sign up");

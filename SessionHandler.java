@@ -2,16 +2,14 @@ import java.util.Scanner;
 import java.io.Console;
 
 public class SessionHandler {
-  private static SessionHandler instance;
+  private Server server;
   private String username;
   private String credentials;
 
-  private SessionHandler() {}
-
-  public static SessionHandler getInstance() {
-    if (instance == null)
-      instance = new SessionHandler();
-    return instance;
+  public SessionHandler(Server server) {
+    this.server = server;
+    fetchUsername();
+    fetchUserCredentials();
   }
 
   public void fetchUsername() {
@@ -25,7 +23,7 @@ public class SessionHandler {
     credentials = new String(console.readPassword("Password: "));
   }
 
-  public boolean signUp(Server server) {
+  public boolean signUp() {
     try {
       return server.addUser(username, credentials);
     } catch (Exception e) {
@@ -33,7 +31,7 @@ public class SessionHandler {
     }
   }
 
-  public Session login(Server server) {
+  public Session login() {
     try {
       return server.getSession(username, credentials);
     } catch (Exception e) {
