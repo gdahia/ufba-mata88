@@ -65,16 +65,20 @@ public class ChatHandler {
     }
   }
 
-  public boolean addUser() {
+  public void addUser() {
     Scanner inputReader = new Scanner(System.in);
     System.out.print("Username to add: ");
     String freshUsername = inputReader.next();
 
     try {
-      return chat.addUser(freshUsername);
+      if (chat.addUser(freshUsername))
+        System.out.println(
+            "User \"" + freshUsername + "\" added to chat \"" + chat.getTopic() + "\"");
+      else
+        System.out.println(
+            "Unable to add \"" + freshUsername + "\" to chat \"" + chat.getTopic() + "\"");
     } catch (Exception e) {
       System.err.println("ChatHandler, addUser exception: " + e.toString());
-      return false;
     }
   }
 }
