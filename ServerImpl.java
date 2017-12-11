@@ -28,7 +28,7 @@ public class ServerImpl implements Server {
     else {
       System.out.println("User \"" + username + "\" registered.");
       credentials.put(username, userCredentials);
-      sessions.put(username, new SessionImpl(this));
+      sessions.put(username, new SessionImpl(username, this));
       return true;
     }
   }

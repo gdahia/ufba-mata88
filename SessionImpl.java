@@ -4,11 +4,13 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class SessionImpl extends UnicastRemoteObject implements Session {
   private Server server;
+  private String username;
   private Vector<Chat> chats;
   private Vector<String> chatnames;
 
-  public SessionImpl(Server server) throws RemoteException {
+  public SessionImpl(String username, Server server) throws RemoteException {
     super();
+    this.username = username;
     this.server = server;
     chats = new Vector<Chat>();
     chatnames = new Vector<String>();
@@ -27,5 +29,9 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 
   public Chat getChat(int index) {
     return chats.get(index);
+  }
+
+  public String getUsername() {
+    return username;
   }
 }
