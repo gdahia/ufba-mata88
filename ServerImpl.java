@@ -15,9 +15,10 @@ public class ServerImpl implements Server {
 
   public Session getSession(String username, String userCredentials) {
     String creds = credentials.get(username);
-    if (creds != null && creds.equals(userCredentials))
+    if (creds != null && creds.equals(userCredentials)) {
+      System.out.println("User \"" + username + "\" logged in.");
       return sessions.get(username);
-    else
+    } else
       return null;
   }
 
@@ -25,6 +26,7 @@ public class ServerImpl implements Server {
     if (credentials.get(username) != null)
       return false;
     else {
+      System.out.println("User \"" + username + "\" registered.");
       credentials.put(username, userCredentials);
       sessions.put(username, new SessionImpl(this));
       return true;
