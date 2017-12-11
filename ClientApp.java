@@ -7,7 +7,7 @@ public class ClientApp {
     try {
       Registry registry = LocateRegistry.getRegistry(host);
       Server server = (Server) registry.lookup("Server");
-      Client client = new Client(server);
+      new Client(server);
     } catch (Exception e) {
       System.err.println("ClientApp exception: " + e.toString());
       e.printStackTrace();
