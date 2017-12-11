@@ -10,7 +10,10 @@ public class Client {
   }
 
   private void login() {
+    // fetch user name and credentials
     SessionHandler id = new SessionHandler(server);
+
+    // attempt to login
     Session sess = id.login();
     if (sess == null)
       System.out.println("Unable to sign in");
@@ -21,7 +24,10 @@ public class Client {
   }
 
   private void signUp() {
+    // fetch user name and credentials
     SessionHandler id = new SessionHandler(server);
+
+    // attempt signup
     if (id.signUp())
       System.out.println("User \"" + id.getUsername() + "\" registered successfully");
     else
@@ -29,8 +35,11 @@ public class Client {
   }
 
   private void printSessionMenu(Vector<String> chats) {
+    // 1st to len-th session menu options are chats
     int len = chats.size();
     for (int i = 0; i < len; i++) System.out.println((i + 1) + " - " + chats.get(i));
+
+    // remaining options
     System.out.println((len + 1) + " - New chat");
     System.out.println((len + 2) + " - Log out");
   }
@@ -49,12 +58,14 @@ public class Client {
 
     try {
       Vector<String> chats = sess.getChatList();
-
       printSessionMenu(chats);
+
+      // menu loop
       boolean quit = false;
       while (!quit && inputReader.hasNext()) {
         // handle chosen menu option
         int opt = inputReader.nextInt();
+
         int len = chats.size();
         if (1 <= opt && opt <= len) {
           // open specified chat
@@ -69,7 +80,7 @@ public class Client {
         else
           System.out.println("Unrecognized option");
 
-        // handle quit
+        // only update chat list and reprint menu if not quitted
         if (!quit) {
           chats = sess.getChatList();
           printSessionMenu(chats);
@@ -84,9 +95,14 @@ public class Client {
 
   private void mainMenu() {
     Scanner inputReader = new Scanner(System.in);
-    boolean quit = false;
+
+    // print menu options
     System.out.println("1 - Sign in\n2 - Sign up\n3 - Quit");
+
+    // menu loop
+    boolean quit = false;
     while (!quit && inputReader.hasNext()) {
+      // handle user chosen menu option
       int opt = inputReader.nextInt();
       switch (opt) {
         case 1:
@@ -102,6 +118,8 @@ public class Client {
           System.out.println("Unrecognized option");
           break;
       }
+
+      // only print menu if not quitted
       if (!quit)
         System.out.println("1 - Sign in\n2 - Sign up\n3 - Quit");
     }
@@ -109,10 +127,15 @@ public class Client {
 
   private void chatMenu(ChatHandler chatHand) {
     Scanner inputReader = new Scanner(System.in);
-    boolean quit = false;
+
+    // print menu options
     System.out.println(
         "1 - Send message\n2 - See message log\n3 - Add new user\n4 - Change topic\n5 - Display members\n6 - Quit");
+
+    // menu loop
+    boolean quit = false;
     while (!quit && inputReader.hasNext()) {
+      // handle user chosen menu option
       int opt = inputReader.nextInt();
       switch (opt) {
         case 1:
@@ -137,6 +160,8 @@ public class Client {
           System.out.println("Unrecognized option");
           break;
       }
+
+      // only reprint menu if not quitted
       if (!quit)
         System.out.println(
             "1 - Send message\n2 - See message log\n3 - Add new user\n4 - Change topic\n5 - Display members\n6 - Quit");
