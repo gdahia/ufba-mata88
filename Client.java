@@ -107,7 +107,8 @@ public class Client {
   private void chatMenu(String username, Chat chat) {
     Scanner inputReader = new Scanner(System.in);
     boolean quit = false;
-    System.out.println("1 - Send message\n2 - See message log\n3 - Add new user\n4 - Quit");
+    System.out.println(
+        "1 - Send message\n2 - See message log\n3 - Add new user\n4 - Change topic\n5 - Display members\n6 - Quit");
     ChatHandler chatHand = new ChatHandler(username, chat);
     while (!quit && inputReader.hasNext()) {
       int opt = inputReader.nextInt();
@@ -122,6 +123,12 @@ public class Client {
           chatHand.addUser();
           break;
         case 4:
+          chatHand.changeTopic();
+          break;
+        case 5:
+          chatHand.displayMembers();
+          break;
+        case 6:
           quit = true;
           break;
         default:
@@ -129,7 +136,8 @@ public class Client {
           break;
       }
       if (!quit)
-        System.out.println("1 - Send message\n2 - See message log\n3 - Add new user\n4 - Quit");
+        System.out.println(
+            "1 - Send message\n2 - See message log\n3 - Add new user\n4 - Change topic\n5 - Display members\n6 - Quit");
     }
   }
 }

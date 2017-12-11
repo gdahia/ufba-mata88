@@ -7,5 +7,6 @@ public interface Chat extends Remote {
   public Message getMessage(int messageIndex) throws RemoteException;
   public void setTopic(String topic) throws RemoteException;
   public String getTopic() throws RemoteException;
+  public Vector<String> getUsernames() throws RemoteException;
   public boolean addUser(String username) throws RemoteException;
 }

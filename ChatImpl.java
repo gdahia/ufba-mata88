@@ -44,6 +44,10 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
     this.topic = topic;
   }
 
+  public Vector<String> getUsernames() {
+    return users;
+  }
+
   public String getTopic() {
     return topic;
   }

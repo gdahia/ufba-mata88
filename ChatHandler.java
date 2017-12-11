@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.Vector;
 
 public class ChatHandler {
   private String username;
@@ -62,6 +63,30 @@ public class ChatHandler {
         } catch (Exception e) {
           System.err.println("ChatHandler, fetchMessages(2) exception: " + e.toString());
         }
+    }
+  }
+
+  public void changeTopic() {
+    // get new chat topic from stdio
+    Scanner inputReader = new Scanner(System.in);
+    System.out.print("Enter new chat topic: ");
+    String topic = inputReader.next();
+
+    // update chat topic
+    try {
+      chat.setTopic(topic);
+    } catch (Exception e) {
+      System.err.println("ChatHandler, changeTopic exception: " + e.toString());
+    }
+  }
+
+  public void displayMembers() {
+    try {
+      Vector<String> usernames = chat.getUsernames();
+      System.out.println("Members:");
+      for (String username : usernames) System.out.println(username);
+    } catch (Exception e) {
+      System.err.println("ChatHandler, displayMembers exception: " + e.toString());
     }
   }
 
