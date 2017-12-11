@@ -56,9 +56,12 @@ public class Client {
         // handle chosen menu option
         int opt = inputReader.nextInt();
         int len = chats.size();
-        if (1 <= opt && opt <= len)
-          chatMenu(sess.getUsername(), sess.getChat(opt - 1));
-        else if (len + 1 == opt) {
+        if (1 <= opt && opt <= len) {
+          // open specified chat
+          ChatHandler chatHandler = new ChatHandler(sess.getUsername(), sess.getChat(opt - 1));
+          chatMenu(chatHandler);
+        } else if (len + 1 == opt) {
+          // create new chat
           newChat(sess);
           System.out.println("New chat created");
         } else if (len + 2 == opt)
@@ -104,12 +107,11 @@ public class Client {
     }
   }
 
-  private void chatMenu(String username, Chat chat) {
+  private void chatMenu(ChatHandler chatHand) {
     Scanner inputReader = new Scanner(System.in);
     boolean quit = false;
     System.out.println(
         "1 - Send message\n2 - See message log\n3 - Add new user\n4 - Change topic\n5 - Display members\n6 - Quit");
-    ChatHandler chatHand = new ChatHandler(username, chat);
     while (!quit && inputReader.hasNext()) {
       int opt = inputReader.nextInt();
       switch (opt) {
