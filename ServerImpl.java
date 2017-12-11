@@ -32,4 +32,28 @@ public class ServerImpl implements Server {
       return true;
     }
   }
+
+  public void addChat(Session sess) throws RemoteException {
+    String username = sess.getUsername();
+    Chat chat = new ChatImpl(this, username);
+    try {
+      sess.addChat(chat);
+      System.out.println("User \"" + username + "\" created a new chat");
+    } catch (Exception e) {
+      System.err.println("ServerImpl, addChat exception: " + e.toString());
+    }
+  }
+
+  public boolean addUserToChat(String username, Chat chat) {
+    Session sess = sessions.get(username);
+    if (sess == null)
+      return false;
+    try {
+      sess.addChat(chat);
+      return true;
+    } catch (Exception e) {
+      System.err.println("ServerImpl, addUserToChat exception: " + e.toString());
+      return false;
+    }
+  }
 }

@@ -16,15 +16,21 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
     chatnames = new Vector<String>();
   }
 
+  public void addChat(Chat chat) throws RemoteException {
+    chats.add(chat);
+    chatnames.add(chat.getTopic());
+  }
+
   public Vector<String> getChatList() {
     return chatnames;
   }
 
-  public boolean newChat(String username) {
-    if (chatnames.contains(username))
-      return false;
-    chatnames.add(username);
-    return true;
+  public void newChat() {
+    try {
+      server.addChat(this);
+    } catch (Exception e) {
+      System.err.println("SessionImpl, newChat exception: " + e.toString());
+    }
   }
 
   public Chat getChat(int index) {

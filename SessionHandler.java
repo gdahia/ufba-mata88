@@ -27,6 +27,7 @@ public class SessionHandler {
     try {
       return server.addUser(username, credentials);
     } catch (Exception e) {
+      System.err.println("SessionHandler, signUp exception: " + e.toString());
       return false;
     }
   }
@@ -35,7 +36,7 @@ public class SessionHandler {
     try {
       return server.getSession(username, credentials);
     } catch (Exception e) {
-      System.out.println(e.toString());
+      System.err.println("SessionHandler, login exception: " + e.toString());
       return null;
     }
   }

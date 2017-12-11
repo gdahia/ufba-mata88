@@ -4,5 +4,8 @@ import java.util.Vector;
 
 public interface Chat extends Remote {
   public void sendMessage(Message message) throws RemoteException;
-  public Vector<Message> getMessages() throws RemoteException;
+  public Message getMessage(int messageIndex) throws RemoteException;
+  public void setTopic(String topic) throws RemoteException;
+  public String getTopic() throws RemoteException;
+  public boolean addUser(String username) throws RemoteException;
 }

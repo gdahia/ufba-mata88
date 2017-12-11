@@ -36,38 +36,32 @@ public class Client {
   }
 
   private void newChat(Session sess) {
-    // read user to whom will chat
-    System.out.print("Enter username to chat with: ");
-    Scanner inputReader = new Scanner(System.in);
-    String username = inputReader.next();
-
     try {
-      if (sess.newChat(username))
-        System.out.println("Succesfully created chat with " + username);
-      else
-        System.out.println("Unable to create chat");
+      sess.newChat();
     } catch (Exception e) {
+      System.err.println("Client, newChat exception: " + e.toString());
       System.out.println("Unable to create chat");
     }
   }
 
   private void sessionMenu(Session sess) {
     Scanner inputReader = new Scanner(System.in);
-    boolean quit = false;
 
     try {
       Vector<String> chats = sess.getChatList();
 
       printSessionMenu(chats);
+      boolean quit = false;
       while (!quit && inputReader.hasNext()) {
         // handle chosen menu option
         int opt = inputReader.nextInt();
         int len = chats.size();
-        if (1 <= opt && opt <= len) {
-          // todo: get chat and start chat menu
-        } else if (len + 1 == opt)
+        if (1 <= opt && opt <= len)
+          chatMenu(sess.getUsername(), sess.getChat(opt - 1));
+        else if (len + 1 == opt) {
           newChat(sess);
-        else if (len + 2 == opt)
+          System.out.println("New chat created");
+        } else if (len + 2 == opt)
           quit = true;
         else
           System.out.println("Unrecognized option");
@@ -79,6 +73,7 @@ public class Client {
         }
       }
     } catch (Exception e) {
+      System.err.println("Client, sessionMenu exception: " + e.toString());
     }
 
     System.out.println("User logged out");
@@ -106,6 +101,35 @@ public class Client {
       }
       if (!quit)
         System.out.println("1 - Sign in\n2 - Sign up\n3 - Quit");
+    }
+  }
+
+  private void chatMenu(String username, Chat chat) {
+    Scanner inputReader = new Scanner(System.in);
+    boolean quit = false;
+    System.out.println("1 - Send message\n2 - See message log\n3 - Add new user\n4 - Quit");
+    ChatHandler chatHand = new ChatHandler(username, chat);
+    while (!quit && inputReader.hasNext()) {
+      int opt = inputReader.nextInt();
+      switch (opt) {
+        case 1:
+          chatHand.sendMessage();
+          break;
+        case 2:
+          chatHand.fetchMessages();
+          break;
+        case 3:
+          chatHand.addUser();
+          break;
+        case 4:
+          quit = true;
+          break;
+        default:
+          System.out.println("Unrecognized option");
+          break;
+      }
+      if (!quit)
+        System.out.println("1 - Send message\n2 - See message log\n3 - Add new user\n4 - Quit");
     }
   }
 }

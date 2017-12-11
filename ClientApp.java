@@ -9,7 +9,7 @@ public class ClientApp {
       Server server = (Server) registry.lookup("Server");
       Client client = new Client(server);
     } catch (Exception e) {
-      System.err.println("Client exception: " + e.toString());
+      System.err.println("ClientApp exception: " + e.toString());
       e.printStackTrace();
     }
   }
