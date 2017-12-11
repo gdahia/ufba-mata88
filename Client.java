@@ -32,7 +32,7 @@ public class Client {
     int len = chats.size();
     for (int i = 0; i < len; i++) System.out.println((i + 1) + " - " + chats.get(i));
     System.out.println((len + 1) + " - New chat");
-    System.out.println((len + 2) + " - Quit");
+    System.out.println((len + 2) + " - Log out");
   }
 
   private void newChat(Session sess) {
