@@ -1,6 +1,10 @@
 import java.util.Scanner;
 import java.io.Console;
 
+import java.security.Key;
+import java.util.Base64;
+import javax.crypto.Cipher;
+
 public class SessionHandler {
   private Server server;
   private String username;
@@ -25,7 +29,10 @@ public class SessionHandler {
 
   public boolean signUp() {
     try {
-      return server.addUser(username, credentials);
+      // encrypt credentials using server public key
+      String cryptCredentials = encrypt(credentials, server.getPubKey());
+
+      return server.addUser(username, cryptCredentials);
     } catch (Exception e) {
       System.err.println("SessionHandler, signUp exception: " + e.toString());
       return false;
@@ -34,7 +41,10 @@ public class SessionHandler {
 
   public Session login() {
     try {
-      return server.getSession(username, credentials);
+      // encrypt credentials using server public key
+      String cryptCredentials = encrypt(credentials, server.getPubKey());
+
+      return server.getSession(username, cryptCredentials);
     } catch (Exception e) {
       System.err.println("SessionHandler, login exception: " + e.toString());
       return null;
@@ -43,5 +53,16 @@ public class SessionHandler {
 
   public String getUsername() {
     return username;
+  }
+
+  public String encrypt(String message, Key pubKey) {
+    try {
+      Cipher cipher = Cipher.getInstance("RSA");
+      cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+      return Base64.getEncoder().encodeToString(cipher.doFinal(message.getBytes()));
+    } catch (Exception e) {
+      System.err.println("SessionHandler, encrypt exception: " + e.toString());
+      return null;
+    }
   }
 }
