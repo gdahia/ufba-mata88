@@ -10,9 +10,9 @@ public class Message implements Serializable {
     this.contents = contents;
     this.replyInformation = "";
   }
-  
-  public Message(String author, String contents, String replyInformation){
-  	this.author = author;
+
+  public Message(String author, String contents, String replyInformation) {
+    this.author = author;
     this.contents = contents;
     this.replyInformation = replyInformation;
   }
@@ -24,8 +24,8 @@ public class Message implements Serializable {
   public String getContents() {
     return contents;
   }
-  
+
   public String getReplyInformation() {
-  	return replyInformation;
+    return replyInformation;
   }
 }

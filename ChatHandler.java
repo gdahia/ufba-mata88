@@ -23,31 +23,33 @@ public class ChatHandler {
       System.err.println("ChatHandler, sendMessage exception: " + e.toString());
     }
   }
-  
-  public void replyMessage(int messageIndex){
-  	try{
-  		int numMessages = chat.getNumMessages();
-  		//handle reply of bottom/top messages
-  		if(messageIndex == 0 || messageIndex == numMessages)
-  			System.out.println("Unable to reply: no message selected");
-  		else {
-  			//get message from stdio
-  			Scanner inputReader = new Scanner(System.in);
-  			String messageContents = inputReader.nextLine();
-  			
-  			Message messageToReply = chat.getMessage(messageIndex);
-  			String replyInformation = " replies to \"" + messageToReply.getContents() + "\" from " + messageToReply.getAuthor();
-  			Message message = new Message(username, messageContents, replyInformation);
-  			chat.sendMessage(message);
-  		}
-  			
-  	} catch (Exception e) {
-  		System.err.println("ChatHandler, replyMessage exception: " + e.toString());
-  	}
+
+  public void replyMessage(int messageIndex) {
+    try {
+      int numMessages = chat.getNumMessages();
+      // handle reply of bottom/top messages
+      if (messageIndex == 0 || messageIndex == numMessages)
+        System.out.println("Unable to reply: no message selected");
+      else {
+        // get message from stdio
+        Scanner inputReader = new Scanner(System.in);
+        String messageContents = inputReader.nextLine();
+
+        Message messageToReply = chat.getMessage(messageIndex);
+        String replyInformation = " replies to \"" + messageToReply.getContents() + "\" from "
+            + messageToReply.getAuthor();
+        Message message = new Message(username, messageContents, replyInformation);
+        chat.sendMessage(message);
+      }
+
+    } catch (Exception e) {
+      System.err.println("ChatHandler, replyMessage exception: " + e.toString());
+    }
   }
 
   public void printMessage(Message message) {
-    System.out.println(message.getAuthor() + message.getReplyInformation() + ": " + message.getContents());
+    System.out.println(
+        message.getAuthor() + message.getReplyInformation() + ": " + message.getContents());
   }
 
   public void fetchMessages() {
@@ -74,8 +76,8 @@ public class ChatHandler {
           messageIndex++;
           break;
         case "r":
-        	replyMessage(messageIndex);
-        	break;
+          replyMessage(messageIndex);
+          break;
         case "q":
           quit = true;
           break;
@@ -87,12 +89,11 @@ public class ChatHandler {
       // handle past most recent message
       if (messageIndex < 0)
         messageIndex = 0;
-      try{
+      try {
         int numMessages = chat.getNumMessages();
         if (messageIndex > numMessages)
           messageIndex = numMessages;
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         System.err.println("ChatHandler, fetchMessages(2) exception: " + e.toString());
       }
 
