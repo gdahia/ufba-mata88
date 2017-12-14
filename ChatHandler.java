@@ -110,7 +110,7 @@ public class ChatHandler {
     // get new chat topic from stdio
     Scanner inputReader = new Scanner(System.in);
     System.out.print("Enter new chat topic: ");
-    String topic = inputReader.next();
+    String topic = inputReader.nextLine();
 
     // update chat topic
     try {
