@@ -36,8 +36,8 @@ public class ChatHandler {
   			String messageContents = inputReader.nextLine();
   			
   			Message messageToReply = chat.getMessage(messageIndex);
-  			String replyInformation = "Reply to \"" + messageToReply.getContents() + "\" from " + messageToReply.getAuthor() + ": ";
-  			Message message = new Message(username, replyInformation + messageContents);
+  			String replyInformation = " replies to \"" + messageToReply.getContents() + "\" from " + messageToReply.getAuthor();
+  			Message message = new Message(username, messageContents, replyInformation);
   			chat.sendMessage(message);
   		}
   			
@@ -47,7 +47,7 @@ public class ChatHandler {
   }
 
   public void printMessage(Message message) {
-    System.out.println(message.getAuthor() + ": " + message.getContents());
+    System.out.println(message.getAuthor() + message.getReplyInformation() + ": " + message.getContents());
   }
 
   public void fetchMessages() {
