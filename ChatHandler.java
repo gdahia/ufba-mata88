@@ -13,7 +13,7 @@ public class ChatHandler {
   public void sendMessage() {
     // get message from stdio
     Scanner inputReader = new Scanner(System.in);
-    String messageContents = inputReader.next();
+    String messageContents = inputReader.nextLine();
 
     Message message = new Message(username, messageContents);
 
@@ -24,15 +24,39 @@ public class ChatHandler {
     }
   }
 
+  public void replyMessage(int messageIndex) {
+    try {
+      int numMessages = chat.getNumMessages();
+      // handle reply of bottom/top messages
+      if (messageIndex == 0 || messageIndex == numMessages)
+        System.out.println("Unable to reply: no message selected");
+      else {
+        // get message from stdio
+        Scanner inputReader = new Scanner(System.in);
+        String messageContents = inputReader.nextLine();
+
+        Message messageToReply = chat.getMessage(messageIndex);
+        String replyInformation = " replies to \"" + messageToReply.getContents() + "\" from "
+            + messageToReply.getAuthor();
+        Message message = new Message(username, messageContents, replyInformation);
+        chat.sendMessage(message);
+      }
+
+    } catch (Exception e) {
+      System.err.println("ChatHandler, replyMessage exception: " + e.toString());
+    }
+  }
+
   public void printMessage(Message message) {
-    System.out.println(message.getContents());
+    System.out.println(
+        message.getAuthor() + message.getReplyInformation() + ": " + message.getContents());
   }
 
   public void fetchMessages() {
     Scanner inputReader = new Scanner(System.in);
 
     // attempt to print current indexed message
-    int messageIndex = 0;
+    int messageIndex = 1;
     try {
       printMessage(chat.getMessage(messageIndex));
     } catch (Exception e) {
@@ -51,6 +75,9 @@ public class ChatHandler {
         case "k":
           messageIndex++;
           break;
+        case "r":
+          replyMessage(messageIndex);
+          break;
         case "q":
           quit = true;
           break;
@@ -62,13 +89,20 @@ public class ChatHandler {
       // handle past most recent message
       if (messageIndex < 0)
         messageIndex = 0;
+      try {
+        int numMessages = chat.getNumMessages();
+        if (messageIndex > numMessages)
+          messageIndex = numMessages;
+      } catch (Exception e) {
+        System.err.println("ChatHandler, fetchMessages(2) exception: " + e.toString());
+      }
 
       // only reprint current message if not quitted
       if (!quit)
         try {
           printMessage(chat.getMessage(messageIndex));
         } catch (Exception e) {
-          System.err.println("ChatHandler, fetchMessages(2) exception: " + e.toString());
+          System.err.println("ChatHandler, fetchMessages(3) exception: " + e.toString());
         }
     }
   }
@@ -77,7 +111,7 @@ public class ChatHandler {
     // get new chat topic from stdio
     Scanner inputReader = new Scanner(System.in);
     System.out.print("Enter new chat topic: ");
-    String topic = inputReader.next();
+    String topic = inputReader.nextLine();
 
     // update chat topic
     try {

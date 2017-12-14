@@ -26,7 +26,7 @@ public class SessionMenu {
           System.out.println("New chat created");
         } else if (len + 2 == opt)
           quit = true;
-        else
+        else if (len + 3 != opt)
           System.out.println("Unrecognized option");
 
         // only update chat list and reprint menu if not quitted
@@ -36,7 +36,7 @@ public class SessionMenu {
         }
       }
     } catch (Exception e) {
-      System.err.println("Client, sessionMenu exception: " + e.toString());
+      System.err.println("Client, sessionMenu exception(2): " + e.toString());
     }
 
     System.out.println("User logged out");
@@ -59,5 +59,6 @@ public class SessionMenu {
     // remaining options
     System.out.println((len + 1) + " - New chat");
     System.out.println((len + 2) + " - Log out");
+    System.out.println((len + 3) + " - Refresh menu");
   }
 }
