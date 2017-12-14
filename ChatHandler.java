@@ -25,7 +25,7 @@ public class ChatHandler {
   }
 
   public void printMessage(Message message) {
-    System.out.println(message.getContents());
+    System.out.println(message.getAuthor() + ": " + message.getContents());
   }
 
   public void fetchMessages() {
