@@ -23,6 +23,28 @@ public class ChatHandler {
       System.err.println("ChatHandler, sendMessage exception: " + e.toString());
     }
   }
+  
+  public void replyMessage(int messageIndex){
+  	try{
+  		int numMessages = chat.getNumMessages();
+  		//handle reply of bottom/top messages
+  		if(messageIndex == 0 || messageIndex == numMessages)
+  			System.out.println("Unable to reply: no message selected");
+  		else {
+  			//get message from stdio
+  			Scanner inputReader = new Scanner(System.in);
+  			String messageContents = inputReader.nextLine();
+  			
+  			Message messageToReply = chat.getMessage(messageIndex);
+  			String replyInformation = "Reply to \"" + messageToReply.getContents() + "\" from " + messageToReply.getAuthor() + ": ";
+  			Message message = new Message(username, replyInformation + messageContents);
+  			chat.sendMessage(message);
+  		}
+  			
+  	} catch (Exception e) {
+  		System.err.println("ChatHandler, replyMessage exception: " + e.toString());
+  	}
+  }
 
   public void printMessage(Message message) {
     System.out.println(message.getAuthor() + ": " + message.getContents());
@@ -51,6 +73,9 @@ public class ChatHandler {
         case "k":
           messageIndex++;
           break;
+        case "r":
+        	replyMessage(messageIndex);
+        	break;
         case "q":
           quit = true;
           break;
