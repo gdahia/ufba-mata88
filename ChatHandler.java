@@ -13,7 +13,7 @@ public class ChatHandler {
   public void sendMessage() {
     // get message from stdio
     Scanner inputReader = new Scanner(System.in);
-    String messageContents = inputReader.next();
+    String messageContents = inputReader.nextLine();
 
     Message message = new Message(username, messageContents);
 
