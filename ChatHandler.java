@@ -32,7 +32,7 @@ public class ChatHandler {
     Scanner inputReader = new Scanner(System.in);
 
     // attempt to print current indexed message
-    int messageIndex = 0;
+    int messageIndex = 1;
     try {
       printMessage(chat.getMessage(messageIndex));
     } catch (Exception e) {
@@ -62,13 +62,21 @@ public class ChatHandler {
       // handle past most recent message
       if (messageIndex < 0)
         messageIndex = 0;
+      try{
+        int numMessages = chat.getNumMessages();
+        if (messageIndex > numMessages)
+          messageIndex = numMessages;
+      }
+      catch (Exception e) {
+        System.err.println("ChatHandler, fetchMessages(2) exception: " + e.toString());
+      }
 
       // only reprint current message if not quitted
       if (!quit)
         try {
           printMessage(chat.getMessage(messageIndex));
         } catch (Exception e) {
-          System.err.println("ChatHandler, fetchMessages(2) exception: " + e.toString());
+          System.err.println("ChatHandler, fetchMessages(3) exception: " + e.toString());
         }
     }
   }

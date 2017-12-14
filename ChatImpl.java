@@ -66,4 +66,8 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
       return false;
     }
   }
+
+  public int getNumMessages() {
+    return messages.size();
+  }
 }
