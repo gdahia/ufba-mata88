@@ -1,16 +1,13 @@
 import java.util.Hashtable;
-import java.util.Vector;
 import java.rmi.RemoteException;
 
 public class ServerImpl implements Server {
   private Hashtable<String, String> credentials;
   private Hashtable<String, Session> sessions;
-  private Vector<Chat> chats;
 
   public ServerImpl() {
     credentials = new Hashtable<String, String>();
     sessions = new Hashtable<String, Session>();
-    chats = new Vector<Chat>();
   }
 
   public Session getSession(String username, String userCredentials) {
