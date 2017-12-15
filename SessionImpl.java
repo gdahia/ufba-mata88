@@ -40,4 +40,12 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
   public String getUsername() {
     return username;
   }
+
+  public void delete() throws RemoteException {
+    // remove from server
+    server.removeUser(username);
+
+    // remove from every participating chat
+    for (Chat chat : chats) chat.removeUser(username);
+  }
 }

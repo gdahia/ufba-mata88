@@ -70,4 +70,8 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
   public int getNumMessages() {
     return messages.size();
   }
+
+  public void removeUser(String username) {
+    users.remove(username);
+  }
 }

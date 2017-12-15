@@ -8,4 +8,5 @@ public interface Session extends Remote {
   public void newChat() throws RemoteException;
   public Chat getChat(int index) throws RemoteException;
   public String getUsername() throws RemoteException;
+  public void delete() throws RemoteException;
 }

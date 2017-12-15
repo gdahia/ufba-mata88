@@ -16,7 +16,7 @@ public class ServerImpl implements Server {
 
     // check if given credentials match stored ones
     if (creds != null && creds.equals(userCredentials)) {
-      System.out.println("User \"" + username + "\" logged in.");
+      System.out.println("User \"" + username + "\" logged in");
       return sessions.get(username);
     } else
       return null;
@@ -27,7 +27,7 @@ public class ServerImpl implements Server {
       // do not add repeated users
       return false;
     else {
-      System.out.println("User \"" + username + "\" registered.");
+      System.out.println("User \"" + username + "\" registered");
 
       // store given credentials
       credentials.put(username, userCredentials);
@@ -72,5 +72,11 @@ public class ServerImpl implements Server {
       System.err.println("ServerImpl, addUserToChat exception: " + e.toString());
       return false;
     }
+  }
+
+  public void removeUser(String username) {
+    sessions.remove(username);
+    credentials.remove(username);
+    System.out.println("User \"" + username + "\" was deleted");
   }
 }
