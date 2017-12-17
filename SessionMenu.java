@@ -35,6 +35,9 @@ public class SessionMenu {
           // refresh menu
           System.out.println("Chat list up-to-date");
         } else if (len + 4 == opt) {
+          // leave a given chat
+          leaveChat(sess);
+        } else if (len + 5 == opt) {
           // logout
           quit = true;
         } else
@@ -93,6 +96,34 @@ public class SessionMenu {
     System.out.println((len + 1) + " - New chat");
     System.out.println((len + 2) + " - Delete account");
     System.out.println((len + 3) + " - Refresh menu");
-    System.out.println((len + 4) + " - Log out");
+    System.out.println((len + 4) + " - Leave chat");
+    System.out.println((len + 5) + " - Log out");
+  }
+
+  private void leaveChat(Session sess) {
+    try {
+      Vector<String> chats = sess.getChatList();
+      int len = chats.size();
+      if (len == 0)
+        // empty chat list
+        System.out.println("Not currently participating in any chats");
+      else {
+        // get leaving chat index
+        System.out.print("Type the index of the chat to leave: ");
+        Scanner inputReader = new Scanner(System.in);
+        int opt = inputReader.nextInt();
+
+        if (1 > opt || opt > len)
+          // out of range index
+          System.out.println("Chat index out of range");
+        else {
+          // leave chosen chat
+          sess.leaveChat(opt - 1);
+          System.out.println("Successfully left chat " + opt);
+        }
+      }
+    } catch (Exception e) {
+      System.err.println("SessionMenu, leaveChat exception: " + e.toString());
+    }
   }
 }

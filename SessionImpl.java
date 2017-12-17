@@ -48,4 +48,12 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
     // remove from every participating chat
     for (Chat chat : chats) chat.removeUser(username);
   }
+
+  public void leaveChat(int index) throws RemoteException {
+    // remove user from chat
+    chats.get(index).removeUser(username);
+
+    // remove chat from user session
+    chats.remove(index);
+  }
 }
