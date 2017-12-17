@@ -31,9 +31,13 @@ public class SessionMenu {
             deleted = true;
             quit = true;
           }
-        } else if (len + 3 == opt)
+        } else if (len + 3 == opt) {
+          // refresh menu
+          System.out.println("Chat list up-to-date");
+        } else if (len + 4 == opt) {
+          // logout
           quit = true;
-        else if (len + 4 != opt)
+        } else
           System.out.println("Unrecognized option");
 
         // only update chat list and reprint menu if not quitted
@@ -88,7 +92,7 @@ public class SessionMenu {
     // remaining options
     System.out.println((len + 1) + " - New chat");
     System.out.println((len + 2) + " - Delete account");
-    System.out.println((len + 3) + " - Log out");
-    System.out.println((len + 4) + " - Refresh menu");
+    System.out.println((len + 3) + " - Refresh menu");
+    System.out.println((len + 4) + " - Log out");
   }
 }
