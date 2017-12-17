@@ -69,7 +69,7 @@ public class SessionMenu {
     System.out.println("Are you sure you want to delete your account? This is irreversible");
     Scanner inputReader = new Scanner(System.in);
     String opt = inputReader.nextLine();
-    if (!opt.isEmpty() || opt.charAt(0) == 'y') {
+    if (!opt.isEmpty() && opt.charAt(0) == 'y') {
       // delete account
       try {
         sess.delete();
