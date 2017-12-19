@@ -159,7 +159,8 @@ public class ChatHandler {
   public void editMessage(int messageIndex) {
     try {
       int numMessages = chat.getNumMessages();
-      // handle reply of bottom/top messages
+      messageIndex = numMessages - messageIndex;
+      // handle edition of bottom/top messages
       if (messageIndex == 0 || messageIndex == numMessages)
         System.out.println("Unable to edit: no message selected");
       else {
@@ -182,7 +183,8 @@ public class ChatHandler {
   public void deleteMessage(int messageIndex) {
     try {
       int numMessages = chat.getNumMessages();
-      // handle reply of bottom/top messages
+      messageIndex = numMessages - messageIndex;
+      // handle deletion of bottom/top messages
       if (messageIndex == 0 || messageIndex == numMessages)
         System.out.println("Unable to delete: no message selected");
       else {
