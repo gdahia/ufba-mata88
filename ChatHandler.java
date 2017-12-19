@@ -148,7 +148,7 @@ public class ChatHandler {
       if (chat.addUser(freshUsername)){
         System.out.println(
             "User \"" + freshUsername + "\" added to chat \"" + chat.getTopic() + "\"");
-        Message newUser = new Message("New user", "\"" + freshUsername + "\" was added to this chat", false);
+        Message newUser = new Message("System", "<<\"" + freshUsername + "\" was added to this chat>>", false);
         chat.sendMessage(newUser);
       }
       else

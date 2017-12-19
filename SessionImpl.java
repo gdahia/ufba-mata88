@@ -51,8 +51,6 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 
   public void leaveChat(int index) throws RemoteException {
     // remove user from chat
-    Message userLeft = new Message("User has left", "\"" + username + "\" has left this chat", false);
-    chats.get(index).sendMessage(userLeft);
     chats.get(index).removeUser(username);
 
     // remove chat from user session

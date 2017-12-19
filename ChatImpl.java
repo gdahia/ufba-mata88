@@ -72,6 +72,8 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
   }
 
   public void removeUser(String username) {
+  	Message userLeft = new Message("System", "<<\"" + username + "\" has left this chat>>", false);
+    this.sendMessage(userLeft);
     users.remove(username);
   }
 
