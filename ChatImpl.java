@@ -4,8 +4,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Vector;
 
 public class ChatImpl extends UnicastRemoteObject implements Chat {
-  private static Message bottomMessage = new Message("System", "<<At end.>>");
-  private static Message topMessage = new Message("System", "<<No older message>>.");
+  private static Message bottomMessage = new Message("System", "<<At end.>>", false);
+  private static Message topMessage = new Message("System", "<<No older message>>.", false);
   private Vector<String> users;
   private Vector<Message> messages;
   private String topic;

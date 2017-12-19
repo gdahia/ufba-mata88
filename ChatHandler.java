@@ -15,7 +15,7 @@ public class ChatHandler {
     Scanner inputReader = new Scanner(System.in);
     String messageContents = inputReader.nextLine();
 
-    Message message = new Message(username, messageContents);
+    Message message = new Message(username, messageContents, true);
 
     try {
       chat.sendMessage(message);
@@ -145,9 +145,12 @@ public class ChatHandler {
 
     try {
       // attempt to add user to chat
-      if (chat.addUser(freshUsername))
+      if (chat.addUser(freshUsername)){
         System.out.println(
             "User \"" + freshUsername + "\" added to chat \"" + chat.getTopic() + "\"");
+        Message newUser = new Message("New user", "\"" + freshUsername + "\" was added to this chat", false);
+        chat.sendMessage(newUser);
+      }
       else
         System.out.println(
             "Unable to add \"" + freshUsername + "\" to chat \"" + chat.getTopic() + "\"");
@@ -159,12 +162,12 @@ public class ChatHandler {
   public void editMessage(int messageIndex) {
     try {
       int numMessages = chat.getNumMessages();
+      Message oldMessage = chat.getMessage(messageIndex);
       messageIndex = numMessages - messageIndex;
       // handle edition of bottom/top messages
-      if (messageIndex == 0 || messageIndex == numMessages)
+      if (!oldMessage.getEditStatus())
         System.out.println("Unable to edit: no message selected");
       else {
-        Message oldMessage = chat.getMessage(messageIndex);
         if (username.equals(oldMessage.getAuthor())){
           Scanner inputReader = new Scanner(System.in);
           String messageContents = inputReader.nextLine();
@@ -183,12 +186,12 @@ public class ChatHandler {
   public void deleteMessage(int messageIndex) {
     try {
       int numMessages = chat.getNumMessages();
+      Message message = chat.getMessage(messageIndex);
       messageIndex = numMessages - messageIndex;
       // handle deletion of bottom/top messages
-      if (messageIndex == 0 || messageIndex == numMessages)
+      if (!message.getEditStatus())
         System.out.println("Unable to delete: no message selected");
       else {
-        Message message = chat.getMessage(messageIndex);
         if (username.equals(message.getAuthor())){
           chat.deleteMessage(messageIndex);
         }
