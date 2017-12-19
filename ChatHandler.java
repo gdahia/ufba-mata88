@@ -84,6 +84,9 @@ public class ChatHandler {
         case "e":
           editMessage(messageIndex);
           break;
+        case "d":
+          deleteMessage(messageIndex);
+          break;
         default:
           System.out.println("Unrecognized command");
           break;
@@ -153,7 +156,7 @@ public class ChatHandler {
     }
   }
 
-    public void editMessage(int messageIndex) {
+  public void editMessage(int messageIndex) {
     try {
       int numMessages = chat.getNumMessages();
       // handle reply of bottom/top messages
