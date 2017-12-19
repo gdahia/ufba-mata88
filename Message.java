@@ -28,4 +28,8 @@ public class Message implements Serializable {
   public String getReplyInformation() {
     return replyInformation;
   }
+
+  public void setContents(String newContents){
+  	contents = newContents;
+  }
 }

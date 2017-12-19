@@ -11,4 +11,5 @@ public interface Chat extends Remote {
   public boolean addUser(String username) throws RemoteException;
   public int getNumMessages() throws RemoteException;
   public void removeUser(String username) throws RemoteException;
+  public void editMessage(int messageIndex, String messageContents) throws RemoteException;
 }

@@ -81,6 +81,9 @@ public class ChatHandler {
         case "q":
           quit = true;
           break;
+        case "e":
+          editMessage(messageIndex);
+          break;
         default:
           System.out.println("Unrecognized command");
           break;
@@ -147,6 +150,29 @@ public class ChatHandler {
             "Unable to add \"" + freshUsername + "\" to chat \"" + chat.getTopic() + "\"");
     } catch (Exception e) {
       System.err.println("ChatHandler, addUser exception: " + e.toString());
+    }
+  }
+
+    public void editMessage(int messageIndex) {
+    try {
+      int numMessages = chat.getNumMessages();
+      // handle reply of bottom/top messages
+      if (messageIndex == 0 || messageIndex == numMessages)
+        System.out.println("Unable to edit: no message selected");
+      else {
+        Message oldMessage = chat.getMessage(messageIndex);
+        if (username.equals(oldMessage.getAuthor())){
+          Scanner inputReader = new Scanner(System.in);
+          String messageContents = inputReader.nextLine();
+          chat.editMessage(messageIndex, messageContents);
+        }
+        else{
+          System.out.println("Unable to edit: you are not the author of this message");
+        }
+      }
+
+    } catch (Exception e) {
+      System.err.println("ChatHandler, editMessage exception: " + e.toString());
     }
   }
 }
