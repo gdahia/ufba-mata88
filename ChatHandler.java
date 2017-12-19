@@ -178,4 +178,25 @@ public class ChatHandler {
       System.err.println("ChatHandler, editMessage exception: " + e.toString());
     }
   }
+  
+  public void deleteMessage(int messageIndex) {
+    try {
+      int numMessages = chat.getNumMessages();
+      // handle reply of bottom/top messages
+      if (messageIndex == 0 || messageIndex == numMessages)
+        System.out.println("Unable to delete: no message selected");
+      else {
+        Message message = chat.getMessage(messageIndex);
+        if (username.equals(message.getAuthor())){
+          chat.deleteMessage(messageIndex);
+        }
+        else{
+          System.out.println("Unable to delete: you are not the author of this message");
+        }
+      }
+
+    } catch (Exception e) {
+      System.err.println("ChatHandler, deleteMessage exception: " + e.toString());
+    }
+  }
 }
