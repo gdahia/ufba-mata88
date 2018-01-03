@@ -6,4 +6,11 @@ O sistema foi implementado de forma que apenas um processo desempenha o papel de
 A comunicação entre processos se dá exclusivamente através de troca de mensagens e pode ocorrer mesmo que eles estejam em computadores diferentes, desde que conectados através de rede.
 Entretanto, ela ocorre sempre entre algum cliente e o servidor: não há comunicação direta entre processos clientes.
 
+Um processo é dito cliente, se ele executa a aplicação do cliente, e analogamente, um processo é dito servidor se ele executa a aplicação do servidor.
+
+Não foram realizados testes de extensibilidade, porém foi possível criar mais de cinco processos usuários em computadores diferentes ao mesmo tempo e utilizar o sistema normalmente, criando grupos para estes usuários e criando também conversas apenas entre dois usuários. Também foi possível acessar a mesma sessão de usuário em computadores diferentes ao mesmo tempo, e as mudanças feitas na sessão (envio e recebimento de mensagens) foram refletidas em todos os computadores que estavam logados na mesma sessão.
+
+Caso a aplicação do cliente falhe, a sessão pode ser recuperada normalmente, apenas reiniciando a aplicação do cliente, já que todos os dados se encontram no servidor, porém, caso a aplicação do servidor falhe, todos os dados serão perdidos, pois o sistema é centralizado e não são realizados tratamentos de falhas, apenas detecções de exceções devido a falhas remotas.
+
+O usuário tem acesso somente a aplicação do cliente, e por isso não tem noção de detalhes de implementação ou de arquitetura do sistema, tendo conhecimento apenas sobre as funcionalidades que são apresentadas a ele nos menus.
 \end{document}
