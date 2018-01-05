@@ -2,15 +2,17 @@
  
 \begin{document}
 
-O sistema foi implementado de forma que apenas um processo desempenha o papel de servidor, de maneira centralizada, e todos os outros processos são clientes.
-A comunicação entre processos se dá exclusivamente através de troca de mensagens e pode ocorrer mesmo que eles estejam em computadores diferentes, desde que conectados através de rede.
-Entretanto, ela ocorre sempre entre algum cliente e o servidor: não há comunicação direta entre processos clientes.
+O sistema foi implementado de forma que apenas um processo, aquele que executa a aplicação do servidor, desempenha o papel de servidor, de maneira centralizada, e todos os outros processos, os que rodam aplicações de clientes, são clientes.
+A comunicação entre processos se dá exclusivamente através de troca de mensagens e pode ocorrer mesmo que eles estejam em computadores diferentes;ela ocorre, entretanto, sempre entre algum cliente e o servidor: não há comunicação direta entre processos clientes.
 
-Um processo é dito cliente, se ele executa a aplicação do cliente, e analogamente, um processo é dito servidor se ele executa a aplicação do servidor.
+Não há atualmente no projeto mecanismos específicos para lidar com sua escalabilidade.
+Logo, ela depende tanto da capacidade computacional proporcionada ao processo servidor e da rede onde o sistema será executado, como das funcionalidades oferecidas por padrão pela implementação.
 
-Não foram realizados testes de extensibilidade, porém foi possível criar mais de cinco processos usuários em computadores diferentes ao mesmo tempo e utilizar o sistema normalmente, criando grupos para estes usuários e criando também conversas apenas entre dois usuários. Também foi possível acessar a mesma sessão de usuário em computadores diferentes ao mesmo tempo, e as mudanças feitas na sessão (envio e recebimento de mensagens) foram refletidas em todos os computadores que estavam logados na mesma sessão.
+Os testes realizados com intuito de avaliar a escalabilidade do sistema foram modestos.
+Em todos, o sistema funcionou como esperado, mas o maior deles foi a criação de mais de cinco processos clientes em computadores diferentes simultaneamente.
 
 Caso a aplicação do cliente falhe, a sessão pode ser recuperada normalmente, apenas reiniciando a aplicação do cliente, já que todos os dados se encontram no servidor, porém, caso a aplicação do servidor falhe, todos os dados serão perdidos, pois o sistema é centralizado e não são realizados tratamentos de falhas, apenas detecções de exceções devido a falhas remotas.
 
 O usuário tem acesso somente a aplicação do cliente, e por isso não tem noção de detalhes de implementação ou de arquitetura do sistema, tendo conhecimento apenas sobre as funcionalidades que são apresentadas a ele nos menus.
+
 \end{document}
