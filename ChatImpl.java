@@ -4,8 +4,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Vector;
 
 public class ChatImpl extends UnicastRemoteObject implements Chat {
-  private static Message bottomMessage = new Message("System", "<<At end.>>");
-  private static Message topMessage = new Message("System", "<<No older message>>.");
+  private static Message bottomMessage = new Message("System", "<<At end.>>", false);
+  private static Message topMessage = new Message("System", "<<No older message>>.", false);
   private Vector<String> users;
   private Vector<Message> messages;
   private String topic;
@@ -25,6 +25,10 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
 
     // get generic chat topic
     topic = this.toString();
+
+    // add chat creation message
+    Message creation = new Message("System", "<<\"" + username + "\" crated this chat>>", false);
+    sendMessage(creation);
   }
 
   public void sendMessage(Message message) {
@@ -69,5 +73,19 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
 
   public int getNumMessages() {
     return messages.size();
+  }
+
+  public void removeUser(String username) {
+    Message userLeft = new Message("System", "<<\"" + username + "\" has left this chat>>", false);
+    this.sendMessage(userLeft);
+    users.remove(username);
+  }
+
+  public void editMessage(int messageIndex, String messageContents) {
+    messages.get(messageIndex).setContents(messageContents);
+  }
+
+  public void deleteMessage(int messageIndex) {
+    messages.remove(messageIndex);
   }
 }

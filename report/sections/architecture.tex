@@ -1,0 +1,29 @@
+\documentclass[../main.tex]{subfiles}
+ 
+\begin{document}
+
+O sistema foi implementado de forma que apenas um processo, aquele que executa a aplicação do servidor, desempenha o papel de servidor, de maneira centralizada, e todos os outros processos, os que rodam aplicações de clientes, são clientes.
+A comunicação entre processos se dá exclusivamente através de troca de mensagens e pode ocorrer mesmo que eles estejam em computadores diferentes.
+Ela ocorre, entretanto, sempre entre algum cliente e o servidor: não há comunicação direta entre clientes.
+
+Não há atualmente no projeto mecanismos específicos para lidar com sua escalabilidade.
+Logo, ela depende tanto da capacidade computacional proporcionada ao servidor e da rede sobre a qual sistema será executado, como das funcionalidades oferecidas pela implementação.
+
+Os testes realizados com intuito de avaliar a escalabilidade do sistema foram modestos.
+Em todos, o sistema funcionou como esperado, mas o maior deles foi a criação de mais de cinco processos clientes em computadores diferentes simultaneamente.
+
+A persistência do sistema é inteiramente dependente da persistência do servidor.
+Por exemplo, caso o cliente falhe, sua sessão pode ser recuperada através do reinício da aplicação do cliente.
+Contudo, caso a aplicação do servidor falhe ou sua invocação seja terminada, todos os dados serão perdidos, já que o sistema é centralizado, não há tratamento de falhas e a persistência do servidor entre invocações não foi implementada.
+Logo, o sistema é tão persistente quanto uma invocação do servidor.
+
+\textit{Openness} foi um aspecto amplamente considerado durante a implementação do sistema, com decisões que visavam diminuir o acoplamento, aumentar a coesão e, ao mesmo tempo, a modularização de seus componentes, favorecendo a possibilidade de sua extensão ou reimplementação de porções, em detrimento de soluções mais simples.
+
+A organização do sistema está feita em arquitetura \textit{two-tier}, garantindo parte da transparência do sistema, visto que, dessa forma, o usuário só conhece a aplicação do cliente e interfaces públicas para interação com o servidor.
+Além disso, o acesso ao sistema é majoritariamente transparente: apenas sua inicialização, suas falhas remotas e sua reconfiguração são visíveis ao usuário.
+O sistema suporta ainda que o acesso não garanta o conhecimento das localizações físicas dos seus recursos e que usuários possam acessar suas contas de múltiplas localidades simultaneamente sem que seus pares saibam.
+
+Devido a escolhas de implementação, não há suporte a heterogeneidade no sistema.
+Ele pode, contudo, ser executado simultaneamente em diversas plataformas, apesar de não terem sidos realizados testes a esse respeito.
+
+\end{document}

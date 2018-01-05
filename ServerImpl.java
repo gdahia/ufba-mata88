@@ -1,5 +1,4 @@
 import java.util.Hashtable;
-import java.util.Vector;
 import java.rmi.RemoteException;
 
 import java.security.KeyPair;
@@ -12,14 +11,12 @@ import javax.crypto.Cipher;
 public class ServerImpl implements Server {
   private Hashtable<String, String> credentials;
   private Hashtable<String, Session> sessions;
-  private Vector<Chat> chats;
   private Key pubKey;
   private Key privKey;
 
   public ServerImpl() {
     credentials = new Hashtable<String, String>();
     sessions = new Hashtable<String, Session>();
-    chats = new Vector<Chat>();
 
     // creates server RSA 2048-bit key pair
     try {
@@ -102,6 +99,12 @@ public class ServerImpl implements Server {
       System.err.println("ServerImpl, addUserToChat exception: " + e.toString());
       return false;
     }
+  }
+
+  public void removeUser(String username) {
+    sessions.remove(username);
+    credentials.remove(username);
+    System.out.println("User \"" + username + "\" was deleted");
   }
 
   public Key getPubKey() {

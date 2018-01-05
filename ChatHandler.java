@@ -15,7 +15,7 @@ public class ChatHandler {
     Scanner inputReader = new Scanner(System.in);
     String messageContents = inputReader.nextLine();
 
-    Message message = new Message(username, messageContents);
+    Message message = new Message(username, messageContents, true);
 
     try {
       chat.sendMessage(message);
@@ -81,6 +81,12 @@ public class ChatHandler {
         case "q":
           quit = true;
           break;
+        case "e":
+          editMessage(messageIndex);
+          break;
+        case "d":
+          deleteMessage(messageIndex);
+          break;
         default:
           System.out.println("Unrecognized command");
           break;
@@ -139,14 +145,61 @@ public class ChatHandler {
 
     try {
       // attempt to add user to chat
-      if (chat.addUser(freshUsername))
+      if (chat.addUser(freshUsername)) {
         System.out.println(
             "User \"" + freshUsername + "\" added to chat \"" + chat.getTopic() + "\"");
-      else
+        Message newUser =
+            new Message("System", "<<\"" + freshUsername + "\" was added to this chat>>", false);
+        chat.sendMessage(newUser);
+      } else
         System.out.println(
             "Unable to add \"" + freshUsername + "\" to chat \"" + chat.getTopic() + "\"");
     } catch (Exception e) {
       System.err.println("ChatHandler, addUser exception: " + e.toString());
+    }
+  }
+
+  public void editMessage(int messageIndex) {
+    try {
+      int numMessages = chat.getNumMessages();
+      Message oldMessage = chat.getMessage(messageIndex);
+      messageIndex = numMessages - messageIndex;
+      // handle edition of bottom/top messages
+      if (!oldMessage.getEditStatus())
+        System.out.println("Unable to edit: no message selected");
+      else {
+        if (username.equals(oldMessage.getAuthor())) {
+          Scanner inputReader = new Scanner(System.in);
+          String messageContents = inputReader.nextLine();
+          chat.editMessage(messageIndex, messageContents);
+        } else {
+          System.out.println("Unable to edit: you are not the author of this message");
+        }
+      }
+
+    } catch (Exception e) {
+      System.err.println("ChatHandler, editMessage exception: " + e.toString());
+    }
+  }
+
+  public void deleteMessage(int messageIndex) {
+    try {
+      int numMessages = chat.getNumMessages();
+      Message message = chat.getMessage(messageIndex);
+      messageIndex = numMessages - messageIndex;
+      // handle deletion of bottom/top messages
+      if (!message.getEditStatus())
+        System.out.println("Unable to delete: no message selected");
+      else {
+        if (username.equals(message.getAuthor())) {
+          chat.deleteMessage(messageIndex);
+        } else {
+          System.out.println("Unable to delete: you are not the author of this message");
+        }
+      }
+
+    } catch (Exception e) {
+      System.err.println("ChatHandler, deleteMessage exception: " + e.toString());
     }
   }
 }
