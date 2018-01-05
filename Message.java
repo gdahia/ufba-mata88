@@ -36,7 +36,7 @@ public class Message implements Serializable {
     return editStatus;
   }
 
-  public void setContents(String newContents){
-  	contents = newContents;
+  public void setContents(String newContents) {
+    contents = newContents;
   }
 }

@@ -145,13 +145,13 @@ public class ChatHandler {
 
     try {
       // attempt to add user to chat
-      if (chat.addUser(freshUsername)){
+      if (chat.addUser(freshUsername)) {
         System.out.println(
             "User \"" + freshUsername + "\" added to chat \"" + chat.getTopic() + "\"");
-        Message newUser = new Message("System", "<<\"" + freshUsername + "\" was added to this chat>>", false);
+        Message newUser =
+            new Message("System", "<<\"" + freshUsername + "\" was added to this chat>>", false);
         chat.sendMessage(newUser);
-      }
-      else
+      } else
         System.out.println(
             "Unable to add \"" + freshUsername + "\" to chat \"" + chat.getTopic() + "\"");
     } catch (Exception e) {
@@ -168,12 +168,11 @@ public class ChatHandler {
       if (!oldMessage.getEditStatus())
         System.out.println("Unable to edit: no message selected");
       else {
-        if (username.equals(oldMessage.getAuthor())){
+        if (username.equals(oldMessage.getAuthor())) {
           Scanner inputReader = new Scanner(System.in);
           String messageContents = inputReader.nextLine();
           chat.editMessage(messageIndex, messageContents);
-        }
-        else{
+        } else {
           System.out.println("Unable to edit: you are not the author of this message");
         }
       }
@@ -182,7 +181,7 @@ public class ChatHandler {
       System.err.println("ChatHandler, editMessage exception: " + e.toString());
     }
   }
-  
+
   public void deleteMessage(int messageIndex) {
     try {
       int numMessages = chat.getNumMessages();
@@ -192,10 +191,9 @@ public class ChatHandler {
       if (!message.getEditStatus())
         System.out.println("Unable to delete: no message selected");
       else {
-        if (username.equals(message.getAuthor())){
+        if (username.equals(message.getAuthor())) {
           chat.deleteMessage(messageIndex);
-        }
-        else{
+        } else {
           System.out.println("Unable to delete: you are not the author of this message");
         }
       }
