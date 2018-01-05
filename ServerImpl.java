@@ -49,8 +49,6 @@ public class ServerImpl implements Server {
     try {
       // add chat to creator session
       sess.addChat(chat);
-      Message creator = new Message("System", "<<\"" + username + "\" crated this chat>>", false);
-      chat.sendMessage(creator);
       System.out.println("User \"" + username + "\" created a new chat");
     } catch (Exception e) {
       System.err.println("ServerImpl, addChat exception: " + e.toString());

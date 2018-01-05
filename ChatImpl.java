@@ -25,6 +25,10 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
 
     // get generic chat topic
     topic = this.toString();
+
+    // add chat creation message
+    Message creation = new Message("System", "<<\"" + username + "\" crated this chat>>", false);
+    sendMessage(creation);
   }
 
   public void sendMessage(Message message) {
@@ -72,16 +76,16 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
   }
 
   public void removeUser(String username) {
-  	Message userLeft = new Message("System", "<<\"" + username + "\" has left this chat>>", false);
+    Message userLeft = new Message("System", "<<\"" + username + "\" has left this chat>>", false);
     this.sendMessage(userLeft);
     users.remove(username);
   }
 
-  public void editMessage(int messageIndex, String messageContents){
-  	messages.get(messageIndex).setContents(messageContents);
+  public void editMessage(int messageIndex, String messageContents) {
+    messages.get(messageIndex).setContents(messageContents);
   }
 
-  public void deleteMessage(int messageIndex){
-  	messages.remove(messageIndex);
+  public void deleteMessage(int messageIndex) {
+    messages.remove(messageIndex);
   }
 }
