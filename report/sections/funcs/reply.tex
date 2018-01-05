@@ -1,0 +1,9 @@
+\documentclass[../main.tex]{subfiles}
+ 
+\begin{document}
+
+O usuário também pode responder mensagens do chat, para isso ele deve digitar o caractere 'r' e depois apertar enter, depois ele deve escrever uma mensagem, que será enviada como uma resposta a mensagem selecionada. O usuário pode responder mensagens de qualquer usuário, inclusive si mesmo, e também pode responder mensagens de sistema, com exeção das mensagens de início (No older message) e fim de conversa (At end.).
+
+A implementação da resposta a mensagens também se baseia no messageIndex explicado na seção anterior. Ao selecionar responder a uma mensagem, o metódo replyMessage irá usar o messageIndex para coletar o conteúdo e o autor da mensagem selecionada, usando os métodos getContents e getAuthor respectivamente, e enviando uma nova mensagem com o conteúdo digitado pelo usuário, indicando que é uma resposta à mensagem selecionada escrita pelo respectivo autor.
+
+\end{document}
