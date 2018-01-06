@@ -1,14 +1,10 @@
 import java.util.Scanner;
-import java.io.Console;
-
-import java.security.Key;
-import java.util.Base64;
-import javax.crypto.Cipher;
+import java.security.KeyPair;
 
 public class SessionHandler {
   private Server server;
   private String username;
-  private String credentials;
+  private KeyPair keys;
 
   public SessionHandler(Server server) {
     this.server = server;
@@ -23,16 +19,24 @@ public class SessionHandler {
   }
 
   public void fetchUserCredentials() {
-    Console console = System.console();
-    credentials = new String(console.readPassword("Password: "));
+    // read keypair folder from standard input
+    Scanner inputReader = new Scanner(System.in);
+    System.out.print("Path to key pair folder (Empty to generate new pair): ");
+    String credentialsPath = inputReader.nextLine();
+
+    // retrieve keypair
+    try {
+      keys = Crypto.getKeys(credentialsPath);
+    } catch (Exception e) {
+      System.err.println("SessionHandler, fetchUserCredentials exception: " + e.toString());
+      System.out.println("Unable to generate key-pair. Exiting");
+      System.exit(1);
+    }
   }
 
   public boolean signUp() {
     try {
-      // encrypt credentials using server public key
-      String cryptCredentials = encrypt(credentials, server.getPubKey());
-
-      return server.addUser(username, cryptCredentials);
+      return server.addUser(username, keys.getPublic());
     } catch (Exception e) {
       System.err.println("SessionHandler, signUp exception: " + e.toString());
       return false;
@@ -41,10 +45,10 @@ public class SessionHandler {
 
   public Session login() {
     try {
-      // encrypt credentials using server public key
-      String cryptCredentials = encrypt(credentials, server.getPubKey());
+      // get encrypted signature
+      String cryptSignature = Crypto.getEncryptedSignature(keys.getPrivate(), server.getPubKey());
 
-      return server.getSession(username, cryptCredentials);
+      return server.getSession(username, cryptSignature);
     } catch (Exception e) {
       System.err.println("SessionHandler, login exception: " + e.toString());
       return null;
@@ -53,16 +57,5 @@ public class SessionHandler {
 
   public String getUsername() {
     return username;
-  }
-
-  public String encrypt(String message, Key pubKey) {
-    try {
-      Cipher cipher = Cipher.getInstance("RSA");
-      cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-      return Base64.getEncoder().encodeToString(cipher.doFinal(message.getBytes()));
-    } catch (Exception e) {
-      System.err.println("SessionHandler, encrypt exception: " + e.toString());
-      return null;
-    }
   }
 }

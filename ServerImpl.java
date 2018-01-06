@@ -2,54 +2,47 @@ import java.util.Hashtable;
 import java.rmi.RemoteException;
 
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.security.Key;
-import java.util.Base64;
-import javax.crypto.Cipher;
+import java.security.PublicKey;
 
 public class ServerImpl implements Server {
-  private Hashtable<String, String> credentials;
+  private Hashtable<String, PublicKey> credentials;
   private Hashtable<String, Session> sessions;
-  private Key pubKey;
-  private Key privKey;
+  private KeyPair keys;
 
   public ServerImpl() {
-    credentials = new Hashtable<String, String>();
+    credentials = new Hashtable<String, PublicKey>();
     sessions = new Hashtable<String, Session>();
 
     // creates server RSA 2048-bit key pair
     try {
-      KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-      keyPairGenerator.initialize(2048);
-      KeyPair keyPair = keyPairGenerator.genKeyPair();
-      pubKey = keyPair.getPublic();
-      privKey = keyPair.getPrivate();
+      keys = Crypto.getKeys(null);
     } catch (Exception e) {
       System.err.println("ServerImpl, ServerImpl exception: " + e.toString());
       System.out.println("Unable to generate key-pair");
+      System.exit(0);
     }
   }
 
-  public Session getSession(String username, String cryptUserCredentials) {
-    // decrypt credentials
-    String userCredentials = decrypt(cryptUserCredentials);
+  public Session getSession(String username, String cryptSignature) {
+    try {
+      // get corresponding stored user credentials
+      PublicKey creds = credentials.get(username);
 
-    // get corresponding stored user credentials
-    String creds = credentials.get(username);
-
-    // check if given credentials match stored ones
-    if (creds != null && creds.equals(userCredentials)) {
-      System.out.println("User \"" + username + "\" logged in");
-      return sessions.get(username);
-    } else
+      // check if user signature is legitimate
+      if (creds != null
+          && Crypto.verifyEncryptedSignature(cryptSignature, keys.getPrivate(), creds)) {
+        System.out.println("User \"" + username + "\" logged in");
+        return sessions.get(username);
+      } else
+        return null;
+    } catch (Exception e) {
+      System.err.println("ServerImpl, getSession exception: " + e.toString());
       return null;
+    }
   }
 
-  public boolean addUser(String username, String cryptUserCredentials) throws RemoteException {
-    // decrypt credentials
-    String userCredentials = decrypt(cryptUserCredentials);
-
+  public boolean addUser(String username, PublicKey userCredentials) throws RemoteException {
     if (credentials.get(username) != null)
       // do not add repeated users
       return false;
@@ -90,6 +83,7 @@ public class ServerImpl implements Server {
     if (sess == null)
       // do not add nonexistent users to chats
       return false;
+
     try {
       // add chat to user session
       sess.addChat(chat);
@@ -108,17 +102,6 @@ public class ServerImpl implements Server {
   }
 
   public Key getPubKey() {
-    return pubKey;
-  }
-
-  private String decrypt(String message) {
-    try {
-      Cipher cipher = Cipher.getInstance("RSA");
-      cipher.init(Cipher.DECRYPT_MODE, privKey);
-      return new String(cipher.doFinal(Base64.getDecoder().decode(message)));
-    } catch (Exception e) {
-      System.err.println("ServerImpl, decrypt exception: " + e.toString());
-      return null;
-    }
+    return keys.getPublic();
   }
 }
