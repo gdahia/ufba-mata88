@@ -2,8 +2,13 @@
  
 \begin{document}
 
-O usuário também pode responder mensagens do chat, para isso ele deve digitar o caractere 'r' e depois apertar enter, depois ele deve escrever uma mensagem, que será enviada como uma resposta a mensagem selecionada. O usuário pode responder mensagens de qualquer usuário, inclusive si mesmo, e também pode responder mensagens de sistema, com exeção das mensagens de início (No older message) e fim de conversa (At end.).
+O usuário também pode responder mensagens do chat.
+Para isso, ele deve digitar o caractere `r' e depois apertar `Enter'.
+Depois, ele deve escrever uma mensagem, que será enviada como resposta à mensagem selecionada.
+O usuário pode responder mensagens de qualquer usuário, inclusive de si mesmo, e também pode responder mensagens de sistema, com exceção das mensagens de início (``\textit{<<No older message>>}'') e fim de conversa (``\textit{<<At end>>}'').
 
-A implementação da resposta a mensagens se baseia no messageIndex. Quando o usuário seleciona o comando de resposta a uma mensagem, chamamos o metódo replyMessage que irá usar o messageIndex para coletar o conteúdo e o autor da mensagem selecionada, usando os métodos getContents e getAuthor respectivamente, e enviando uma nova mensagem com o conteúdo digitado pelo usuário, indicando que é uma resposta à mensagem selecionada.
+A implementação da resposta a mensagens se baseia no atributo \textit{messageIndex}.
+Quando o usuário seleciona o comando de resposta a uma mensagem, o metódo \textit{replyMessage} é chamado.
+Ele utiliza o \textit{messageIndex} para coletar o conteúdo e o autor da mensagem selecionada, usando os métodos \textit{getContents} e \textit{getAuthor} respectivamente, e enviando uma nova mensagem com o conteúdo digitado pelo usuário, indicando que é uma resposta à mensagem selecionada.
 
 \end{document}
