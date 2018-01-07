@@ -165,7 +165,7 @@ public class ChatHandler {
       Message oldMessage = chat.getMessage(messageIndex);
       messageIndex = numMessages - messageIndex;
       // handle edition of bottom/top messages
-      if (!oldMessage.getEditStatus())
+      if (!oldMessage.getEditable())
         System.out.println("Unable to edit: no message selected");
       else {
         if (username.equals(oldMessage.getAuthor())) {
@@ -188,7 +188,7 @@ public class ChatHandler {
       Message message = chat.getMessage(messageIndex);
       messageIndex = numMessages - messageIndex;
       // handle deletion of bottom/top messages
-      if (!message.getEditStatus())
+      if (!message.getEditable())
         System.out.println("Unable to delete: no message selected");
       else {
         if (username.equals(message.getAuthor())) {
