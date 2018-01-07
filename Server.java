@@ -10,5 +10,7 @@ public interface Server extends Remote {
   public void removeUser(String username) throws RemoteException;
   public boolean addUserToChat(String username, Chat chat) throws RemoteException;
   public String getVerificationCode(String username) throws RemoteException;
+  public String getEncryptedVerificationCode(String username, Key encryptionKey)
+      throws RemoteException;
   public Key getPubKey() throws RemoteException;
 }

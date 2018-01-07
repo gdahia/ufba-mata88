@@ -45,9 +45,21 @@ public class SessionHandler {
 
   public Session login() {
     try {
-      // get encrypted signature
-      String encryptedSignedVerificationCode = Crypto.signAndEncrypt(
-          server.getVerificationCode(username), keys.getPrivate(), server.getPubKey());
+      // get encrypted verification code
+      String encryptedVerificationCode =
+          server.getEncryptedVerificationCode(username, keys.getPublic());
+
+      // decrypt verification code
+      int halfLength = encryptedVerificationCode.length() / 2;
+      String verificationCode1 =
+          Crypto.decrypt(encryptedVerificationCode.substring(0, halfLength), keys.getPrivate());
+      String verificationCode2 =
+          Crypto.decrypt(encryptedVerificationCode.substring(halfLength), keys.getPrivate());
+      String verificationCode = verificationCode1 + verificationCode2;
+
+      // sign and encrypt verification code
+      String encryptedSignedVerificationCode =
+          Crypto.signAndEncrypt(verificationCode, keys.getPrivate(), server.getPubKey());
 
       return server.getSession(username, encryptedSignedVerificationCode);
     } catch (Exception e) {
