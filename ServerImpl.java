@@ -7,11 +7,13 @@ import java.security.PublicKey;
 
 public class ServerImpl implements Server {
   private Hashtable<String, PublicKey> credentials;
+  private Hashtable<String, String> verificationCodes;
   private Hashtable<String, Session> sessions;
   private KeyPair keys;
 
   public ServerImpl() {
     credentials = new Hashtable<String, PublicKey>();
+    verificationCodes = new Hashtable<String, String>();
     sessions = new Hashtable<String, Session>();
 
     // creates server RSA 2048-bit key pair
@@ -24,20 +26,36 @@ public class ServerImpl implements Server {
     }
   }
 
-  public Session getSession(String username, String cryptSignature) {
+  public Session getSession(String username, String encryptedSignedVerificationCode) {
     try {
       // get corresponding stored user credentials
       PublicKey creds = credentials.get(username);
 
-      // check if user signature is legitimate
-      if (creds != null
-          && Crypto.verifyEncryptedSignature(cryptSignature, keys.getPrivate(), creds)) {
+      // get corresponding verification code
+      String verificationCode = verificationCodes.get(username);
+
+      // check user login legitimacy
+      if (creds != null && verificationCode != null
+          && Crypto.verifyEncryptedSignature(
+                 verificationCode, encryptedSignedVerificationCode, keys.getPrivate(), creds)) {
+        // remove verification code side effect
+        verificationCodes.remove(username);
+
         System.out.println("User \"" + username + "\" logged in");
+
         return sessions.get(username);
-      } else
+      } else {
+        // remove verification code side effect
+        verificationCodes.remove(username);
+
         return null;
+      }
     } catch (Exception e) {
+      // remove verification code side effect
+      verificationCodes.remove(username);
+
       System.err.println("ServerImpl, getSession exception: " + e.toString());
+
       return null;
     }
   }
@@ -103,5 +121,15 @@ public class ServerImpl implements Server {
 
   public Key getPubKey() {
     return keys.getPublic();
+  }
+
+  public String getVerificationCode(String username) {
+    // generate 128 secure random string
+    String verificationCode = Crypto.secureRandomString(128);
+
+    // save random string for checking in login attempt
+    verificationCodes.put(username, verificationCode);
+
+    return verificationCode;
   }
 }

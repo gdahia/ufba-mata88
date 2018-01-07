@@ -72,49 +72,53 @@ public class Crypto {
     }
   }
 
-  public static String getEncryptedSignature(PrivateKey signatureKey, Key encryptionKey)
-      throws GeneralSecurityException {
-    // generate signature data randomly
+  public static String secureRandomString(int length) {
     SecureRandom random = new SecureRandom();
-    byte[] bytes = new byte[128];
+    byte[] bytes = new byte[length];
     random.nextBytes(bytes);
-    String data = Base64.getEncoder().encodeToString(bytes);
+    return Base64.getEncoder().encodeToString(bytes);
+  }
 
-    // generate signature
+  public static String signAndEncrypt(String data, PrivateKey signatureKey, Key encryptionKey)
+      throws GeneralSecurityException {
+    // init signature resources
     Signature rsa = Signature.getInstance("SHA256withRSA");
     rsa.initSign(signatureKey);
-    rsa.update(bytes);
+
+    // feed data to be signed
+    rsa.update(Base64.getDecoder().decode(data));
+
+    // sign and convert signed data to string
     byte[] signed = rsa.sign();
-    String signature = Base64.getEncoder().encodeToString(signed);
+    String signedData = Base64.getEncoder().encodeToString(signed);
 
-    // encrypt halves and concatenate
-    int halfLength = signature.length() / 2;
-    String cryptSignature1 = encrypt(signature.substring(0, halfLength), encryptionKey);
-    String cryptSignature2 = encrypt(signature.substring(halfLength), encryptionKey);
-    String cryptSignature3 = encrypt(data, encryptionKey);
+    // split into halves for encryption and encrypt
+    int halfLength = signedData.length() / 2;
+    String encryptedSignedData1 = encrypt(signedData.substring(0, halfLength), encryptionKey);
+    String encryptedSignedData2 = encrypt(signedData.substring(halfLength), encryptionKey);
 
-    return cryptSignature1 + cryptSignature2 + cryptSignature3;
+    return encryptedSignedData1 + encryptedSignedData2;
   }
 
   public static boolean verifySignature(String signature, String data, PublicKey signatureKey)
       throws GeneralSecurityException {
+    // init signature resources
     Signature rsa = Signature.getInstance("SHA256withRSA");
     rsa.initVerify(signatureKey);
 
-    // data to be verified
-    byte[] bytes = Base64.getDecoder().decode(data);
-    rsa.update(bytes);
+    // feed data to be verified
+    rsa.update(Base64.getDecoder().decode(data));
 
     return rsa.verify(Base64.getDecoder().decode(signature));
   }
 
-  public static boolean verifyEncryptedSignature(String cryptSignature, Key encryptionKey,
-      PublicKey signatureKey) throws GeneralSecurityException {
-    int thirdLength = cryptSignature.length() / 3;
-    String signature1 = decrypt(cryptSignature.substring(0, thirdLength), encryptionKey);
-    String signature2 =
-        decrypt(cryptSignature.substring(thirdLength, 2 * thirdLength), encryptionKey);
-    String data = decrypt(cryptSignature.substring(2 * thirdLength), encryptionKey);
-    return verifySignature(signature1 + signature2, data, signatureKey);
+  public static boolean verifyEncryptedSignature(String data, String encryptedSignedData,
+      Key encryptionKey, PublicKey signatureKey) throws GeneralSecurityException {
+    // decrypt halves separately and concatenate
+    int halfLength = encryptedSignedData.length() / 2;
+    String signedData1 = decrypt(encryptedSignedData.substring(0, halfLength), encryptionKey);
+    String signedData2 = decrypt(encryptedSignedData.substring(halfLength), encryptionKey);
+
+    return verifySignature(signedData1 + signedData2, data, signatureKey);
   }
 }

@@ -46,9 +46,10 @@ public class SessionHandler {
   public Session login() {
     try {
       // get encrypted signature
-      String cryptSignature = Crypto.getEncryptedSignature(keys.getPrivate(), server.getPubKey());
+      String encryptedSignedVerificationCode = Crypto.signAndEncrypt(
+          server.getVerificationCode(username), keys.getPrivate(), server.getPubKey());
 
-      return server.getSession(username, cryptSignature);
+      return server.getSession(username, encryptedSignedVerificationCode);
     } catch (Exception e) {
       System.err.println("SessionHandler, login exception: " + e.toString());
       return null;
