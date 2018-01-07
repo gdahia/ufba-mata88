@@ -27,7 +27,7 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
     topic = this.toString();
 
     // add chat creation message
-    Message creation = new Message("System", "<<\"" + username + "\" crated this chat>>", false);
+    Message creation = new Message("System", "<<\"" + username + "\" created this chat>>", false);
     sendMessage(creation);
   }
 
