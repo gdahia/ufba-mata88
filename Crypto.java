@@ -19,7 +19,7 @@ public class Crypto {
   }
 
   public static void saveKeyPair(String path, KeyPair keys) throws Exception {
-    System.out.println("Save key pair to \"" + Paths.get(path) + "\"...");
+    System.out.println("Saving key pair to \"" + Paths.get(path) + "\"...");
 
     // save private key
     byte[] privKeyBytes = keys.getPrivate().getEncoded();
