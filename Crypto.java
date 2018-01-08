@@ -56,7 +56,7 @@ public class Crypto {
       // generate new key pair
       System.out.println("Generating new key pair...");
       KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-      keyPairGenerator.initialize(2048);
+      keyPairGenerator.initialize(4096);
       KeyPair keys = keyPairGenerator.genKeyPair();
       System.out.println("Done");
 

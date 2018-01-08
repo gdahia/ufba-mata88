@@ -138,14 +138,10 @@ public class ServerImpl implements Server {
       // get verification code
       String verificationCode = getVerificationCode(username);
 
-      // split and encrypt verification code
-      int halfLength = verificationCode.length() / 2;
-      String encryptedVerificationCode1 =
-          Crypto.encrypt(verificationCode.substring(0, halfLength), encryptionKey);
-      String encryptedVerificationCode2 =
-          Crypto.encrypt(verificationCode.substring(halfLength), encryptionKey);
+      // encrypt verification code
+      String encryptedVerificationCode = Crypto.encrypt(verificationCode, encryptionKey);
 
-      return encryptedVerificationCode1 + encryptedVerificationCode2;
+      return encryptedVerificationCode;
     } catch (Exception e) {
       System.err.println("ServerImpl, getEncryptedVerificationCode exception: " + e.toString());
       return null;
