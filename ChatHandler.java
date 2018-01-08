@@ -153,14 +153,10 @@ public class ChatHandler {
       Key userPubKey = chat.getServer().getUserPubKey(freshUsername);
 
       // attempt to add user to chat
-      if (userPubKey != null
-          && chat.addUser(freshUsername, Crypto.sealObject(chatKey, userPubKey))) {
+      if (userPubKey != null && chat.addUser(freshUsername, Crypto.sealObject(chatKey, userPubKey)))
         System.out.println(
             "User \"" + freshUsername + "\" added to chat \"" + chat.getTopic() + "\"");
-        Message newUser =
-            new Message("System", "<<\"" + freshUsername + "\" was added to this chat>>", false);
-        chat.sendMessage(newUser);
-      } else
+      else
         System.out.println(
             "Unable to add \"" + freshUsername + "\" to chat \"" + chat.getTopic() + "\"");
     } catch (Exception e) {
@@ -174,8 +170,8 @@ public class ChatHandler {
       Message oldMessage = chat.getMessage(messageIndex);
       messageIndex = numMessages - messageIndex;
       // handle edition of bottom/top messages
-      if (!oldMessage.getEditStatus())
-        System.out.println("Unable to edit: no message selected");
+      if (!oldMessage.getEditable())
+        System.out.println("Unable to edit: no editable message selected");
       else {
         if (username.equals(oldMessage.getAuthor())) {
           Scanner inputReader = new Scanner(System.in);
@@ -197,8 +193,8 @@ public class ChatHandler {
       Message message = chat.getMessage(messageIndex);
       messageIndex = numMessages - messageIndex;
       // handle deletion of bottom/top messages
-      if (!message.getEditStatus())
-        System.out.println("Unable to delete: no message selected");
+      if (!message.getEditable())
+        System.out.println("Unable to delete: no editable message selected");
       else {
         if (username.equals(message.getAuthor())) {
           chat.deleteMessage(messageIndex);

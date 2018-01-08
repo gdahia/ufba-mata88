@@ -18,9 +18,10 @@ public class ServerApp {
       Registry registry = LocateRegistry.getRegistry();
       registry.bind("Server", stub);
 
+      System.out.println("Server online");
+
     } catch (Exception e) {
       System.err.println("Server exception: " + e.toString());
-      e.printStackTrace();
     }
   }
 }

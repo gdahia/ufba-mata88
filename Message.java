@@ -4,20 +4,20 @@ public class Message implements Serializable {
   private String author;
   private String contents;
   private String replyInformation;
-  private boolean editStatus;
+  private boolean editable;
 
   public Message(String author, String contents, boolean editable) {
     this.author = author;
     this.contents = contents;
     this.replyInformation = "";
-    editStatus = editable;
+    this.editable = editable;
   }
 
   public Message(String author, String contents, String replyInformation) {
     this.author = author;
     this.contents = contents;
     this.replyInformation = replyInformation;
-    editStatus = true;
+    editable = true;
   }
 
   public String getAuthor() {
@@ -32,8 +32,8 @@ public class Message implements Serializable {
     return replyInformation;
   }
 
-  public boolean getEditStatus() {
-    return editStatus;
+  public boolean getEditable() {
+    return editable;
   }
 
   public void setContents(String newContents) {
