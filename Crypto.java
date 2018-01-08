@@ -128,7 +128,7 @@ public class Crypto {
   }
 
   public static Key getSymmetricKey() throws GeneralSecurityException {
-    String keyString = secureRandomString(128);
+    String keyString = secureRandomString(16);
     byte[] keyBytes = Base64.getDecoder().decode(keyString);
     Key key = new SecretKeySpec(keyBytes, "AES");
     return key;

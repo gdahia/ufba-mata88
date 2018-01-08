@@ -16,13 +16,18 @@ public class ChatHandler {
   }
 
   public void sendMessage() {
-    // get message from stdio
-    Scanner inputReader = new Scanner(System.in);
-    String messageContents = inputReader.nextLine();
-
-    Message message = new Message(username, messageContents, true);
-
     try {
+      // get message from stdio
+      Scanner inputReader = new Scanner(System.in);
+      String messageContents = inputReader.nextLine();
+
+      // encrypt message contents
+      String encryptedMessageContents = Crypto.encrypt(messageContents, chatKey, "AES");
+
+      // wrap message in appropriate format
+      Message message = new Message(username, encryptedMessageContents, true);
+
+      // effectively send message
       chat.sendMessage(message);
     } catch (Exception e) {
       System.err.println("ChatHandler, sendMessage exception: " + e.toString());
@@ -40,10 +45,24 @@ public class ChatHandler {
         Scanner inputReader = new Scanner(System.in);
         String messageContents = inputReader.nextLine();
 
+        // encrypt message contents
+        String encryptedMessageContents = Crypto.encrypt(messageContents, chatKey, "AES");
+
+        // decrypt contents of message to reply
         Message messageToReply = chat.getMessage(messageIndex);
-        String replyInformation = " replies to \"" + messageToReply.getContents() + "\" from "
-            + messageToReply.getAuthor();
-        Message message = new Message(username, messageContents, replyInformation);
+        String messageToReplyContents =
+            Crypto.decrypt(messageToReply.getContents(), chatKey, "AES");
+
+        // create and encrypt reply information
+        String replyInformation =
+            " replies to \"" + messageToReplyContents + "\" from " + messageToReply.getAuthor();
+        String encryptedReplyInformation = Crypto.encrypt(replyInformation, chatKey, "AES");
+
+        // wrap reply in appropriate format
+        Message message =
+            new Message(username, encryptedMessageContents, encryptedReplyInformation);
+
+        // effectively send message
         chat.sendMessage(message);
       }
 
@@ -52,9 +71,21 @@ public class ChatHandler {
     }
   }
 
-  public void printMessage(Message message) {
-    System.out.println(
-        message.getAuthor() + message.getReplyInformation() + ": " + message.getContents());
+  public void printMessage(Message message) throws Exception {
+    if (!message.isEditable())
+      // if message is not editable, than it is a system unencrypted message
+      System.out.println(
+          message.getAuthor() + message.getReplyInformation() + ": " + message.getContents());
+    else {
+      // decrypt message contents
+      String messageContents = Crypto.decrypt(message.getContents(), chatKey, "AES");
+
+      // decrypt reply information
+      String replyInformation = Crypto.decrypt(message.getReplyInformation(), chatKey, "AES");
+
+      // print message to screen
+      System.out.println(message.getAuthor() + replyInformation + ": " + messageContents);
+    }
   }
 
   public void fetchMessages() {
@@ -170,7 +201,7 @@ public class ChatHandler {
       Message oldMessage = chat.getMessage(messageIndex);
       messageIndex = numMessages - messageIndex;
       // handle edition of bottom/top messages
-      if (!oldMessage.getEditable())
+      if (!oldMessage.isEditable())
         System.out.println("Unable to edit: no editable message selected");
       else {
         if (username.equals(oldMessage.getAuthor())) {
@@ -193,7 +224,7 @@ public class ChatHandler {
       Message message = chat.getMessage(messageIndex);
       messageIndex = numMessages - messageIndex;
       // handle deletion of bottom/top messages
-      if (!message.getEditable())
+      if (!message.isEditable())
         System.out.println("Unable to delete: no editable message selected");
       else {
         if (username.equals(message.getAuthor())) {

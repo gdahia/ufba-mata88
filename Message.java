@@ -32,7 +32,7 @@ public class Message implements Serializable {
     return replyInformation;
   }
 
-  public boolean getEditable() {
+  public boolean isEditable() {
     return editable;
   }
 
