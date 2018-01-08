@@ -58,5 +58,8 @@ O usuário pode a qualquer momento deletar sua própria conta. Para fazer isso e
 
 Uma vez que o usuário seleciona a deleção de sua conta e confirma, a sessão irá chamar o método \textit{delete} que irá chamar o método \textir{removeUser} na instância do servidor que está sendo usada por aquele usuário e que recebe como argumento o nome de usuário. O servidor irá então remover a sessão e a credencial do usuário de suas respectivas \textit{Hashtable}s e ao retornar, a função delete irá remover o usuário de todas as conversas das quais ele participava. Feito isso o usuário irá receber uma mensagem garantindo que sua conta foi deletada, e será redirecionado para o menu principal da aplicação.
 
+\subsection{Refresh Menu}
+
+O usuário pode ser adicionado por outros usuários a novas conversas, porém, não foi implementada nenhuma funcionalidade que notificasse o usuário sobre adições em novas conversas. Por isso foi colocada uma opção no menu de sessão que possibilita ao usuário atualizar a sua lista de chats, ou seja, caso ele tenha sido adicionado em alguma conversa por outro usuário, esta não estará visível ao usuário até que ele selecione a opção \textit{Refresh menu} ou seja redirecionado ao menu de sessão por alguma outra opção. Quando o usuário seleciona está opção, será exibida uma mensagem dizendo que estas são as conversas que ele participa até agora, e o usuário será redirecionado novamente para o menu de sessão, porém, caso o usuário tenha sido adicionado a alguma conversa, esta agora estará visível, uma vez que a cada vez que o usuário é redirecionado ao menu de sessão, a lista de chats é atualizada.
 \end{document}
 
