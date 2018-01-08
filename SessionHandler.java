@@ -50,7 +50,7 @@ public class SessionHandler {
           server.getEncryptedVerificationCode(username, keys.getPublic());
 
       // decrypt verification code
-      String verificationCode = Crypto.decrypt(encryptedVerificationCode, keys.getPrivate());
+      String verificationCode = Crypto.decrypt(encryptedVerificationCode, keys.getPrivate(), "RSA");
 
       // sign and encrypt verification code
       String encryptedSignedVerificationCode =

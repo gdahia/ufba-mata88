@@ -7,14 +7,16 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
 public class Crypto {
-  public static String encrypt(String message, Key key) throws GeneralSecurityException {
-    Cipher cipher = Cipher.getInstance("RSA");
+  public static String encrypt(String message, Key key, String algorithm)
+      throws GeneralSecurityException {
+    Cipher cipher = Cipher.getInstance(algorithm);
     cipher.init(Cipher.ENCRYPT_MODE, key);
     return Base64.getEncoder().encodeToString(cipher.doFinal(message.getBytes()));
   }
 
-  public static String decrypt(String message, Key key) throws GeneralSecurityException {
-    Cipher cipher = Cipher.getInstance("RSA");
+  public static String decrypt(String message, Key key, String algorithm)
+      throws GeneralSecurityException {
+    Cipher cipher = Cipher.getInstance(algorithm);
     cipher.init(Cipher.DECRYPT_MODE, key);
     return new String(cipher.doFinal(Base64.getDecoder().decode(message)));
   }
@@ -95,8 +97,9 @@ public class Crypto {
 
     // split into halves for encryption and encrypt
     int halfLength = signedData.length() / 2;
-    String encryptedSignedData1 = encrypt(signedData.substring(0, halfLength), encryptionKey);
-    String encryptedSignedData2 = encrypt(signedData.substring(halfLength), encryptionKey);
+    String encryptedSignedData1 =
+        encrypt(signedData.substring(0, halfLength), encryptionKey, "RSA");
+    String encryptedSignedData2 = encrypt(signedData.substring(halfLength), encryptionKey, "RSA");
 
     return encryptedSignedData1 + encryptedSignedData2;
   }
@@ -117,8 +120,9 @@ public class Crypto {
       Key encryptionKey, PublicKey signatureKey) throws GeneralSecurityException {
     // decrypt halves separately and concatenate
     int halfLength = encryptedSignedData.length() / 2;
-    String signedData1 = decrypt(encryptedSignedData.substring(0, halfLength), encryptionKey);
-    String signedData2 = decrypt(encryptedSignedData.substring(halfLength), encryptionKey);
+    String signedData1 =
+        decrypt(encryptedSignedData.substring(0, halfLength), encryptionKey, "RSA");
+    String signedData2 = decrypt(encryptedSignedData.substring(halfLength), encryptionKey, "RSA");
 
     return verifySignature(signedData1 + signedData2, data, signatureKey);
   }

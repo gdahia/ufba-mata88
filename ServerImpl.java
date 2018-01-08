@@ -122,7 +122,7 @@ public class ServerImpl implements Server {
       String verificationCode = getVerificationCode(username);
 
       // encrypt verification code
-      String encryptedVerificationCode = Crypto.encrypt(verificationCode, encryptionKey);
+      String encryptedVerificationCode = Crypto.encrypt(verificationCode, encryptionKey, "RSA");
 
       return encryptedVerificationCode;
     } catch (Exception e) {
