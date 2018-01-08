@@ -2,7 +2,8 @@ import java.nio.file.*;
 import java.io.*;
 import java.security.spec.*;
 import java.security.*;
-import javax.crypto.Cipher;
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
 public class Crypto {
@@ -120,5 +121,22 @@ public class Crypto {
     String signedData2 = decrypt(encryptedSignedData.substring(halfLength), encryptionKey);
 
     return verifySignature(signedData1 + signedData2, data, signatureKey);
+  }
+
+  public static Key getSymmetricKey() throws GeneralSecurityException {
+    String keyString = secureRandomString(128);
+    byte[] keyBytes = Base64.getDecoder().decode(keyString);
+    Key key = new SecretKeySpec(keyBytes, "AES");
+    return key;
+  }
+
+  public static SealedObject sealObject(Serializable obj, Key key) throws Exception {
+    Cipher cipher = Cipher.getInstance("RSA");
+    cipher.init(Cipher.ENCRYPT_MODE, key);
+    return new SealedObject(obj, cipher);
+  }
+
+  public static Object unsealObject(SealedObject obj, Key key) throws Exception {
+    return obj.getObject(key);
   }
 }

@@ -2,16 +2,19 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Vector;
+import javax.crypto.SealedObject;
 
 public class ChatImpl extends UnicastRemoteObject implements Chat {
   private static Message bottomMessage = new Message("System", "<<At end.>>", false);
   private static Message topMessage = new Message("System", "<<No older message>>.", false);
   private Vector<String> users;
   private Vector<Message> messages;
+  private Vector<SealedObject> encryptedChatKeys;
   private String topic;
   private Server server;
 
-  public ChatImpl(Server server, String username) throws RemoteException {
+  public ChatImpl(Server server, String username, SealedObject encryptedChatKey)
+      throws RemoteException {
     // hold server reference
     this.server = server;
 
@@ -22,6 +25,10 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
     // create messages vector and put empty message in it
     messages = new Vector<Message>();
     messages.add(topMessage);
+
+    // create chat keys vector and put creator chat key in it
+    encryptedChatKeys = new Vector<SealedObject>();
+    encryptedChatKeys.add(encryptedChatKey);
 
     // get generic chat topic
     topic = this.toString();
@@ -56,13 +63,14 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
     return topic;
   }
 
-  public boolean addUser(String username) {
+  public boolean addUser(String username, SealedObject encryptedChatKey) {
     try {
       // only add users that are not already in chat
       if (users.contains(username) || !server.addUserToChat(username, this))
         return false;
       else {
         users.add(username);
+        encryptedChatKeys.add(encryptedChatKey);
         return true;
       }
     } catch (Exception e) {
@@ -76,9 +84,15 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
   }
 
   public void removeUser(String username) {
+    // remove user key
+    encryptedChatKeys.remove(getUserIndex(username));
+
+    // effectively remove user
+    users.remove(username);
+
+    // message chat with user removal
     Message userLeft = new Message("System", "<<\"" + username + "\" has left this chat>>", false);
     this.sendMessage(userLeft);
-    users.remove(username);
   }
 
   public void editMessage(int messageIndex, String messageContents) {
@@ -87,5 +101,17 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
 
   public void deleteMessage(int messageIndex) {
     messages.remove(messageIndex);
+  }
+
+  public SealedObject getUserEncryptedChatKey(String username) {
+    return encryptedChatKeys.get(getUserIndex(username));
+  }
+
+  private int getUserIndex(String username) {
+    return users.indexOf(username);
+  }
+
+  public Server getServer() {
+    return server;
   }
 }

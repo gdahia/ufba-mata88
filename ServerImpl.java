@@ -6,13 +6,13 @@ import java.security.Key;
 import java.security.PublicKey;
 
 public class ServerImpl implements Server {
-  private Hashtable<String, PublicKey> credentials;
+  private Hashtable<String, PublicKey> userKeys;
   private Hashtable<String, String> verificationCodes;
   private Hashtable<String, Session> sessions;
   private KeyPair keys;
 
   public ServerImpl() {
-    credentials = new Hashtable<String, PublicKey>();
+    userKeys = new Hashtable<String, PublicKey>();
     verificationCodes = new Hashtable<String, String>();
     sessions = new Hashtable<String, Session>();
 
@@ -28,8 +28,8 @@ public class ServerImpl implements Server {
 
   public Session getSession(String username, String encryptedSignedVerificationCode) {
     try {
-      // get corresponding stored user credentials
-      PublicKey creds = credentials.get(username);
+      // get corresponding stored user user keys
+      PublicKey creds = userKeys.get(username);
 
       // get corresponding verification code
       String verificationCode = verificationCodes.get(username);
@@ -61,36 +61,19 @@ public class ServerImpl implements Server {
   }
 
   public boolean addUser(String username, PublicKey userCredentials) throws RemoteException {
-    if (credentials.get(username) != null)
+    if (userKeys.get(username) != null)
       // do not add repeated users
       return false;
     else {
       System.out.println("User \"" + username + "\" registered");
 
-      // store given credentials
-      credentials.put(username, userCredentials);
+      // store given user keys
+      userKeys.put(username, userCredentials);
 
       // create user session
       sessions.put(username, new SessionImpl(username, this));
 
       return true;
-    }
-  }
-
-  public void addChat(Session sess) throws RemoteException {
-    // get chat creator username
-    String username = sess.getUsername();
-
-    // create new chat
-    Chat chat = new ChatImpl(this, username);
-
-    try {
-      // add chat to creator session
-      sess.addChat(chat);
-
-      System.out.println("User \"" + username + "\" created a new chat");
-    } catch (Exception e) {
-      System.err.println("ServerImpl, addChat exception: " + e.toString());
     }
   }
 
@@ -115,7 +98,7 @@ public class ServerImpl implements Server {
 
   public void removeUser(String username) {
     sessions.remove(username);
-    credentials.remove(username);
+    userKeys.remove(username);
     System.out.println("User \"" + username + "\" was deleted");
   }
 
@@ -146,5 +129,9 @@ public class ServerImpl implements Server {
       System.err.println("ServerImpl, getEncryptedVerificationCode exception: " + e.toString());
       return null;
     }
+  }
+
+  public Key getUserPubKey(String username) {
+    return userKeys.get(username);
   }
 }

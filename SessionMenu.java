@@ -1,8 +1,11 @@
 import java.util.Scanner;
 import java.util.Vector;
+import java.security.KeyPair;
+import java.security.Key;
+import javax.crypto.SealedObject;
 
 public class SessionMenu {
-  public SessionMenu(Session sess) {
+  public SessionMenu(Session sess, KeyPair keys) {
     Scanner inputReader = new Scanner(System.in);
     boolean deleted = false;
 
@@ -19,11 +22,12 @@ public class SessionMenu {
         int len = chats.size();
         if (1 <= opt && opt <= len) {
           // open specified chat
-          ChatHandler chatHandler = new ChatHandler(sess.getUsername(), sess.getChat(opt - 1));
+          ChatHandler chatHandler =
+              new ChatHandler(sess.getUsername(), keys.getPrivate(), sess.getChat(opt - 1));
           new ChatMenu(chatHandler);
         } else if (len + 1 == opt) {
           // create new chat
-          newChat(sess);
+          newChat(sess, keys.getPublic());
           System.out.println("New chat created");
         } else if (len + 2 == opt) {
           // delete user account prompt
@@ -58,9 +62,12 @@ public class SessionMenu {
       System.out.println("User logged out");
   }
 
-  private void newChat(Session sess) {
+  private void newChat(Session sess, Key encryptionKey) {
     try {
-      sess.newChat();
+      // generate and encrypt symmetric chat key
+      Key chatKey = Crypto.getSymmetricKey();
+      SealedObject encryptedChatKey = Crypto.sealObject(chatKey, encryptionKey);
+      sess.newChat(encryptedChatKey);
     } catch (Exception e) {
       System.err.println("Client, newChat exception: " + e.toString());
       System.out.println("Unable to create chat");

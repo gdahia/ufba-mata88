@@ -47,7 +47,7 @@ public class Client {
       System.out.println("Unable to sign in");
     else {
       System.out.println("Welcome, " + id.getUsername());
-      new SessionMenu(sess);
+      new SessionMenu(sess, id.getCredentials());
     }
   }
 

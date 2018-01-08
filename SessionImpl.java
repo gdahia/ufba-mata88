@@ -1,6 +1,7 @@
 import java.util.Vector;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import javax.crypto.SealedObject;
 
 public class SessionImpl extends UnicastRemoteObject implements Session {
   private Server server;
@@ -25,9 +26,16 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
     return chatNames;
   }
 
-  public void newChat() {
+  public void newChat(SealedObject encryptedChatKey) {
     try {
-      server.addChat(this);
+      // create new chat
+      Chat chat = new ChatImpl(server, username, encryptedChatKey);
+
+      // add chat
+      addChat(chat);
+
+      // output message for creation
+      System.out.println("User \"" + username + "\" created a new chat");
     } catch (Exception e) {
       System.err.println("SessionImpl, newChat exception: " + e.toString());
     }

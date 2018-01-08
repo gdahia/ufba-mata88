@@ -66,4 +66,8 @@ public class SessionHandler {
   public String getUsername() {
     return username;
   }
+
+  public KeyPair getCredentials() {
+    return keys;
+  }
 }

@@ -1,13 +1,18 @@
 import java.util.Scanner;
 import java.util.Vector;
+import java.security.Key;
 
 public class ChatHandler {
   private String username;
   private Chat chat;
+  private Key chatKey;
 
-  public ChatHandler(String username, Chat chat) {
+  public ChatHandler(String username, Key userKey, Chat chat) throws Exception {
     this.username = username;
     this.chat = chat;
+
+    // get user chat key
+    chatKey = (Key) Crypto.unsealObject(chat.getUserEncryptedChatKey(username), userKey);
   }
 
   public void sendMessage() {
@@ -144,8 +149,12 @@ public class ChatHandler {
     String freshUsername = inputReader.next();
 
     try {
+      // get user public key from server
+      Key userPubKey = chat.getServer().getUserPubKey(freshUsername);
+
       // attempt to add user to chat
-      if (chat.addUser(freshUsername)) {
+      if (userPubKey != null
+          && chat.addUser(freshUsername, Crypto.sealObject(chatKey, userPubKey))) {
         System.out.println(
             "User \"" + freshUsername + "\" added to chat \"" + chat.getTopic() + "\"");
         Message newUser =
