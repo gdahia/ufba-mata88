@@ -2,9 +2,13 @@
  
 \begin{document}
 
-O sistema foi implementado usando a linguagem Java, pois é uma linguagem amplamente conhecida e utilizada comercialmente, e que todos os integrantes do grupo possuem um bom conhecimento sobre. Além disso Java facilita a programação de sistemas distribuídos pois possui API's específicas para tais projetos, como o RMI, que foi utilizado neste trabalho. Outros aspectos como transparência, possível mobilidade e extensibilidade também foram levados em consideração e favorecendo a escolha da linguagem Java.
+\subsection{Linguagem Java}
 
-O RMI é uma interface que permite que metódos de objetos remotos, isto é, instâncias de objetos que não necessariamente estão na mesma máquina, possam ser chamados como uma chamada local, tornando a implementação mais simples. Além disso, o RMI proporciona uma transparência maior ao sistema, visto que a parte de comunicação entre processos distribuídos é lidada por ele, ficando assim fora do alcance do usuário. O RMI também proporciona mobilidade, uma vez que objetos e código podem ser transportados pelo sistema.
+O sistema foi implementado usando a linguagem Java, pois esta era, dentre as analisadas, a única que todos os integrantes do grupo possuíam previamente um bom conhecimento sobre, possui integração e suporte nativo a ferramentas dedicadas a construção de sistemas distribuídos.
+
+Dentre as ferramentas nativas de Java, a mais importante para o projeto foi Java RMI, pois permitiu que o sistema fosse implementado sem que fosse necessário se preocupar com gerenciamento de memória dentre os processos e, excetuando a inicialização requerida pelo sistema, a declaração de heranças e implementações relativas ao comportamento remoto das classes e o tratamento de exceções, as chamadas pudessem ser feitas como seriam localmente.
+
+Além de Java RMI, a simplicidade para o tratamento de ações concorrentes em Java, também uma funcionalidade nativa da linguagem, tornou a implementação do trabalho muito mais fácil do que seria em alguma outra linguagem não tão apta a tarefa.
 
 \end{document}
 
