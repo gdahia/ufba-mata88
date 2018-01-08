@@ -58,11 +58,18 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
 
   public boolean addUser(String username) {
     try {
-      // only add users that are not already in chat
+      // check if user is to be added to the chat
       if (users.contains(username) || !server.addUserToChat(username, this))
         return false;
       else {
+        // send system message of added user
+        Message newUser =
+            new Message("System", "<<\"" + username + "\" was added to this chat>>", false);
+        sendMessage(newUser);
+
+        // effectively add user
         users.add(username);
+
         return true;
       }
     } catch (Exception e) {

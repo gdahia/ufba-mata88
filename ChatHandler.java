@@ -145,13 +145,10 @@ public class ChatHandler {
 
     try {
       // attempt to add user to chat
-      if (chat.addUser(freshUsername)) {
+      if (chat.addUser(freshUsername))
         System.out.println(
             "User \"" + freshUsername + "\" added to chat \"" + chat.getTopic() + "\"");
-        Message newUser =
-            new Message("System", "<<\"" + freshUsername + "\" was added to this chat>>", false);
-        chat.sendMessage(newUser);
-      } else
+      else
         System.out.println(
             "Unable to add \"" + freshUsername + "\" to chat \"" + chat.getTopic() + "\"");
     } catch (Exception e) {
