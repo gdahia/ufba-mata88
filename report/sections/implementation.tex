@@ -4,11 +4,43 @@
 
 \subsection{Linguagem Java}
 
-O sistema foi implementado usando a linguagem Java, pois esta era, dentre as analisadas, a única que todos os integrantes do grupo possuíam previamente um bom conhecimento sobre, possui integração e suporte nativo a ferramentas dedicadas a construção de sistemas distribuídos.
+O sistema foi implementado em linguagem Java, pois esta era, dentre as analisadas, a única sobre a qual todos os integrantes do grupo domínio prévio suficiente, e que também possui integração e suporte nativo a ferramentas dedicadas a construção de sistemas distribuídos.
 
 Dentre as ferramentas nativas de Java, a mais importante para o projeto foi Java RMI, pois permitiu que o sistema fosse implementado sem que fosse necessário se preocupar com gerenciamento de memória dentre os processos e, excetuando a inicialização requerida pelo sistema, a declaração de heranças e implementações relativas ao comportamento remoto das classes e o tratamento de exceções, as chamadas pudessem ser feitas como seriam localmente.
+A importância de Java RMI é tal que dois processos que se comunicam diretamente só o fazem através de invocações remotas de métodos.
 
 Além de Java RMI, a simplicidade para o tratamento de ações concorrentes em Java, também uma funcionalidade nativa da linguagem, tornou a implementação do trabalho muito mais fácil do que seria em alguma outra linguagem não tão apta a tarefa.
+Já em estágio de desenvolvimento avançado do projeto, contudo, foi descoberto que os mecanismos de Java utilizados nesse trabalho para o tratamento de concorrência (o uso da classe \textit{Vector} ao invés da mais comumente utilizada \textit{ArrayList}, por exemplo) são pouco recomendados pela comunidade por falhas e que é mais apropriado utilizar novos métodos (como métodos \textit{synchronized} e a classe \textit{CopyOnWriteArrayList}).
+Entretanto, os testes não conseguiram detectar problemas na implementação e, por isso, esse foi considerado um problema menor.
+
+\subsection{Conexão entre clientes e servidor}
+
+Um servidor para o sistema de troca de mensagens desta implementação deve implementar a interface remota \textit{Server}.
+A única implementação fornecida é a classe \textit{ServerImpl}, a principal classe do lado do servidor da aplicação.
+É através da obtenção de uma referência a um objeto remoto que implementa a interface \textit{Server} (na prática, uma instância de \textit{ServerImpl}) que se dá a comunicação entre clientes e servidor.
+A aplicação do servidor, implementada na classe \textit{ServerApp}, instancia um objeto da classe \textit{ServerImpl}, o exporta e faz o \textit{bind} no registro.
+A invocação da aplicação do servidor deve fornecer o endereço IP (com o comando \textit{java ServerApp [endereço IP]}) ao qual clientes deverão se conectar; caso contrário, é assumido que se trata de \textit{localhost}.
+
+A aplicação do cliente, implementada na classe \textit{ClientApp}, é responsável por obter a referência ao objeto remoto que implementa o servidor, dado o endereço IP como argumento da invocação, e instanciar a classe \textit{Client}, responsável pela interação com o usuário, com a instância obtida como argumento.
+
+\subsection{Interação com o usuário}
+
+A interação com o usuário se dá através de um menu textual impresso na linha de comando de um terminal.
+Não há interface gráfica.
+Os comandos podem ser de dois tipos: ou correspondem a numeração especificada em algum menu ou a comandos similares aos utilizados em editores de texto modais, como \textit{vi}.
+
+Os menus são implementados nas classes de sufixo \textit{Menu} e na classe \textit{Client}.
+Existe interação mínima com o usuário também nas classes com sufixo \textit{Handler}.
+
+\subsection{Cadastro de usuários}
+
+Para se cadastrar no sistema, um novo usuário deve selecionar a opção \textit{Sign up} no menu principal.
+Isso ocasiona a instanciação de um objeto da classe \textit{SessionHandler}, com argumento a referência ao servidor, cujo construtor é responsável por obter o nome que o usuário deseja utilizar no sistema e suas credenciais.
+Em seguida, a invocação do método \textit{signUp} da classe \textit{SessionHandler} faz com que o nome de usuário escolhido e as credenciais sejam enviadas ao servidor através de uma invocação remota do método \textit{addUser}.
+Este método verifica a disponibilidade do nome de usuário requisitado -- nomes de usuário são identificadores únicos para usuários e, portanto, não podem se repetir no servidor -- e, caso esteja livre, salva as credenciais do usuário associando-as a seu nome.
+O usuário é informado com uma mensagem, na saída padrão, do sucesso ou não de sua requisição.
+
+% utilizamos comunicacao direta entre cliente e servidor para implementar comunicacao indireta entre clientes (publish-subscribe nos grupos?)
 
 \end{document}
 
