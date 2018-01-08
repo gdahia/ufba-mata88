@@ -47,5 +47,10 @@ O usuário é informado com uma mensagem, na saída padrão, do sucesso ou não 
 Para efetuar o login no sistem, o usuário deve selecionar a opção \textit{Sign in} no menu principal.
 Feito isso o sistema irá pedir que o usuário digite seu \textit{Username}. Feito isso o sistema irá verificar a autenticidade das credenciais e identidade do usuário. Caso o se comprove a autenticidade, o usuário será recebido com uma mensagem de boas vindas e será redirecionado para o menu de sessão. Caso o usuário não seja quem ele diz ser, ele será notificado com uma mensagem de erro.
 
+\subsection{New Chat}
+
+Para criar novas conversas, o usuário deve selecionar a opção \textit{New Chat} no menu de sessão.
+Uma vez selecionada esta opção, a sessão irá mandar uma requisição para o servidor, que caso suceda, irá instanciar um objeto da classe \textit{ChatImpl} e adicionar essa instância ao vetor de chats da sessão que fez a requisição. Caso contrário, será exibida uma mensagem de erro.
+
 \end{document}
 
