@@ -9,7 +9,11 @@ O usuário pode responder mensagens de qualquer usuário, inclusive de si mesmo,
 
 A implementação da resposta a mensagens se baseia no atributo \textit{messageIndex}.
 Quando o usuário seleciona o comando de resposta a uma mensagem, o metódo \textit{replyMessage} é chamado.
-Ele utiliza o \textit{messageIndex} para verificar se a mensagem é ou não uma das mensagens de início ou fim, e caso não seja coletar o conteúdo e o autor da mensagem selecionada, usando os métodos \textit{getContents} e \textit{getAuthor} respectivamente. Caso a mensagem seja a mensagem de início, ela estará na posição \textit{0}. Caso a mensagem seja a mensagem de fim, ela estará na posição \textit{numMessages}. Por isso, quando \textit{messageIndex} é igual a \textit{0} ou \textit{numMessages}, é exibida uma mensagem de erro, dizendo que nenhuma mensagem foi selecionada. Caso a mensagem não seja nem a mensagem de início e nem a mensagem de fim, o usuário irá digitar o conteúdo da mensagem de resposta, e será enviada uma nova mensagem com o conteúdo digitado pelo usuário, indicando que é uma resposta à mensagem selecionada.
+Ele utiliza o \textit{messageIndex} para verificar se a mensagem é ou não uma das mensagens de início ou fim, e, caso ela realmente não seja, coletar o conteúdo e o autor da mensagem selecionada, usando os métodos \textit{getContents} e \textit{getAuthor} respectivamente.
+Caso a mensagem seja a mensagem de início, ela estará na posição 0.
+Caso a mensagem seja a mensagem de fim, ela estará na posição \textit{numMessages}.
+Por isso, quando \textit{messageIndex} é igual a 0 ou \textit{numMessages}, é exibida uma mensagem de erro, dizendo que nenhuma mensagem foi selecionada.
+Caso a mensagem não seja nem a mensagem de início e nem a mensagem de fim, o usuário irá digitar o conteúdo da mensagem de resposta, e será enviada uma nova mensagem com o conteúdo digitado pelo usuário, indicando que é uma resposta à mensagem selecionada.
 
 Quando um usuário responde a uma mensagem, e posteriormente a mensagem que foi selecionada para resposta é editada ou removida, a mensagem de resposta não será alterada, exibindo o conteúdo da mensagem no momento em que foi selecionada pelo usuário que fez a resposta.
 
