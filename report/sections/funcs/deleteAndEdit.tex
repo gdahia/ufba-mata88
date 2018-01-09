@@ -4,19 +4,22 @@
 
 O usuário pode deletar ou editar mensagens que ele tenha enviado para alguma conversa.
 Para isso, ele precisa abrir o log de mensagens e navegar até encontrar a mensagem que deseja editar ou deletar.
-Ao chegar na mesagem, o usuário que deseja deletar uma mensagem deve apertar o caractére `d' e depois apertar `Enter'.
-Isso irá deletar permanentemente aquela mensagem da conversa, e a mudança será refletida para todos os usuários da conversa, ou seja, nenhum usuário será capaz de visualizar novamente aquela mensagem.
+Ao chegar na mesagem, o usuário que deseja deletar uma mensagem deve apertar o caractere `d' e depois apertar `Enter'.
+Isso irá deletar permanentemente aquela mensagem da conversa, e a mudança será refletida para todos os usuários da conversa.
+Ou seja, nenhum usuário será capaz de visualizar novamente aquela mensagem.
 
-Para editar o conteúdo da mensagem, o usuário deve digitar o caractére `e' e depois apertar `Enter'.
-Ao fazer isso, o usuário deve digitar o novo conteudo da mensagem.
-Isso fará com que o conteudo antigo seja substituido pelo conteúdo digitado e todos os usuários passarão a ver a mensagem com seu novo conteúdo.
+Para editar o conteúdo da mensagem, o usuário deve digitar o caractere `e' e depois apertar `Enter'.
+Ao fazer isso, o usuário deve digitar o novo conteúdo da mensagem.
+Isso fará com que o conteúdo antigo seja substituido pelo conteúdo digitado e todos os usuários passarão a ver a mensagem editada.
 Caso o usuário tente deletar ou editar uma mensagem enviada pelo sistema, será mostrada uma mensagem de erro dizendo que o usuário não selecionou nenhuma mensagem editável, pois mensagens enviadas pelo sistema não podem ser modificadas.
 Caso um usuário tente editar ou deletar uma mensagem de outro usuário, será mostrada uma mensagem de erro dizendo que ele não é o autor daquela mensagem, e, portanto, não tem o direito de editar ou deletar aquela mensagem.
 
 Para alterar o conteúdo da mensagem, basta alterar de fato o atributo \textit{contents} da instância correspondente de \textit{Message}, utilizando o método \textit{setContents} com o novo conteúdo digitado pelo usuário como argumento.
 Para deletar a mensagem, basta remover a instância de \textit{Message} desejada do \textit{Vector} de mensagens do chat correspondente.
 As duas implementações se baseiam no atributo \textit{messageIndex}, por isso, quando o usuário seleciona o comando de edição, chamamos o método que modifica o conteúdo da mensagem para a mensagem na posição \textit{messageIndex} do \textit{Vector} de mensagens do chat, e quando o usuário seleciona o comando de deleção, removemos a mensagem na posição \textit{messageIndex} do \textit{Vector} de mensagens do chat.
-Para garantir que o usuário não irá deletar ou editar mensagens de sistema ou de um outro usuário, verificamos se a mensagem pode ou não ser modificada, observando o valor do atributo \textit{editable}, pois todas as mensagens de sistemas possuem o valor de \textit{editable} igual a \textit{false}, e todas as mensagens de usuários possuem valor de \textit{editable} igual a \textit{true}, portanto, quando o valor de \textit{editable} for igual a \textit{false}, será exibida uma mensagem de erro dizendo que nenhuma mensagem editável foi selecionada. Quando o valor de \textit{editable} é igual a \textit{true}, comparamos o nome do usuário que deseja fazer a alteração com o nome do autor da mensagem, permitindo apenas que a alteração seja feita quando ambos forem iguais.
+Para garantir que o usuário não irá deletar ou editar mensagens de sistema ou de um outro usuário, verificamos se a mensagem pode ou não ser modificada, observando o valor do atributo \textit{editable}, pois todas as mensagens de sistemas possuem o valor de \textit{editable} igual a \textit{false}, e todas as mensagens de usuários possuem valor de \textit{editable} igual a \textit{true}.
+Portanto, quando o valor de \textit{editable} for igual a \textit{false}, será exibida uma mensagem de erro dizendo que nenhuma mensagem editável foi selecionada.
+Quando o valor de \textit{editable} é igual a \textit{true}, comparamos o nome do usuário que deseja fazer a alteração com o nome do autor da mensagem, permitindo apenas que a alteração seja feita quando ambos forem iguais.
 Como o nome do usuário é um identificador único para o mesmo, um usuário pode deletar ou editar mensagens apenas de sua autoria.
 
 \end{document}

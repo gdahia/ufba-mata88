@@ -2,9 +2,99 @@
  
 \begin{document}
 
-O sistema foi implementado usando a linguagem Java, pois é uma linguagem amplamente conhecida e utilizada comercialmente, e que todos os integrantes do grupo possuem um bom conhecimento sobre. Além disso Java facilita a programação de sistemas distribuídos pois possui API's específicas para tais projetos, como o RMI, que foi utilizado neste trabalho. Outros aspectos como transparência, possível mobilidade e extensibilidade também foram levados em consideração e favorecendo a escolha da linguagem Java.
+\subsection{Linguagem Java}
 
-O RMI é uma interface que permite que metódos de objetos remotos, isto é, instâncias de objetos que não necessariamente estão na mesma máquina, possam ser chamados como uma chamada local, tornando a implementação mais simples. Além disso, o RMI proporciona uma transparência maior ao sistema, visto que a parte de comunicação entre processos distribuídos é lidada por ele, ficando assim fora do alcance do usuário. O RMI também proporciona mobilidade, uma vez que objetos e código podem ser transportados pelo sistema.
+O sistema foi implementado em linguagem Java, pois esta era, dentre as analisadas, a única sobre a qual todos os integrantes do grupo tinham domínio prévio suficiente, e que também possui integração e suporte nativo a ferramentas dedicadas a construção de sistemas distribuídos.
+
+Dentre as ferramentas nativas de Java, a mais importante para o projeto foi Java RMI, pois permitiu que o sistema fosse implementado sem que fosse necessário se preocupar com gerenciamento de memória dentre os processos e, excetuando a inicialização requerida pelo sistema, a declaração de heranças e implementações relativas ao comportamento remoto das classes e o tratamento de exceções, as chamadas pudessem ser feitas como seriam localmente, ignorando na maior parte do tempo preocupações com problemas como \textit{marshalling} e \textit{unmarshalling}, por exemplo.
+A importância de Java RMI é tal que dois processos que se comunicam diretamente só o fazem através de invocações remotas de métodos.
+
+Além de Java RMI, a simplicidade para o tratamento de ações concorrentes em Java, também uma funcionalidade nativa da linguagem, tornou a implementação do trabalho muito mais fácil do que seria em alguma outra linguagem não tão apta a tarefa.
+Já em estágio de desenvolvimento avançado do projeto, contudo, foi descoberto que os mecanismos de Java utilizados nesse trabalho para o tratamento de concorrência (o uso da classe \textit{Vector} ao invés da mais comumente utilizada \textit{ArrayList}, por exemplo) são pouco recomendados pela comunidade por falhas e que é mais apropriado utilizar novos métodos (como métodos \textit{synchronized} e a classe \textit{CopyOnWriteArrayList}).
+Entretanto, os testes não conseguiram detectar problemas na implementação e, por isso, esse foi considerado um problema menor.
+
+\subsection{Conexão entre clientes e servidor}
+
+Um servidor para o sistema de troca de mensagens desta implementação deve implementar a interface remota \textit{Server}.
+A única implementação fornecida é a classe \textit{ServerImpl}, a principal classe do lado do servidor da aplicação.
+É através da obtenção de uma referência a um objeto remoto que implementa a interface \textit{Server} (na prática, uma instância de \textit{ServerImpl}) que se dá a comunicação entre clientes e servidor.
+A aplicação do servidor, implementada na classe \textit{ServerApp}, instancia um objeto da classe \textit{ServerImpl}, o exporta e faz o \textit{bind} no registro.
+A invocação da aplicação do servidor deve fornecer o endereço IP (com o comando \textit{java ServerApp [endereço IP]}) ao qual clientes deverão se conectar; caso contrário, é assumido que se trata de \textit{localhost}.
+
+A aplicação do cliente, implementada na classe \textit{ClientApp}, é responsável por obter a referência ao objeto remoto que implementa o servidor, dado o endereço IP como argumento da invocação, e instanciar a classe \textit{Client}, responsável pela interação com o usuário, com a instância obtida como argumento.
+
+\subsection{Interação com o usuário}
+
+A interação com o usuário se dá através de um menu textual impresso na linha de comando de um terminal.
+Não há interface gráfica.
+Os comandos podem ser de dois tipos: ou correspondem a numeração especificada em algum menu ou a comandos similares aos utilizados em editores de texto modais, como \textit{vi}.
+
+Os menus são implementados nas classes de sufixo \textit{Menu} e na classe \textit{Client}.
+Existe interação mínima com o usuário também nas classes com sufixo \textit{Handler}.
+
+\subsection{Cadastro de usuários} \label{subsec:signup}
+
+Para se cadastrar no sistema, um novo usuário deve selecionar a opção \textit{Sign up} no menu principal.
+Isso ocasiona a instanciação de um objeto da classe \textit{SessionHandler}, com argumento a referência ao servidor, cujo construtor é responsável por obter o nome que o usuário deseja utilizar no sistema e suas credenciais.
+Em seguida, a invocação do método \textit{signUp} da classe \textit{SessionHandler} faz com que o nome de usuário escolhido e as credenciais (ambas classes serializáveis) sejam enviadas ao servidor através de uma invocação remota do método \textit{addUser}.
+Este método verifica a disponibilidade do nome de usuário requisitado -- nomes de usuário são identificadores únicos para usuários e, portanto, não podem se repetir no servidor -- e, caso esteja livre, salva as credenciais do usuário associando-as a seu nome, além da instanciação de uma sessão de usuário da classe \textit{SessionImpl}, implementação da interface \textit{Session}.
+O usuário é informado com uma mensagem, na saída padrão, do sucesso ou não de sua requisição.
+
+\subsection{Login}
+
+Para efetuar o login no sistem, o usuário deve selecionar a opção \textit{Sign in} no menu principal.
+Isso ocasiona a instanciação de um objeto da classe \textit{SessionHandler}, análogo à vista na seção \ref{subsec:signup}.
+Feito isso, o servidor irá verificar a autenticidade das credenciais fornecidas utilizando as credenciais armazenadas anteriormente e, assim, a identidade do usuário.
+Caso se comprove sua autenticidade, o usuário será recebido com uma mensagem de boas vindas e será redirecionado para o menu de sessão.
+A nível de implementação, o login bem-sucedido termina com o servidor enviando ao cliente uma referência ao objeto remoto \textit{Session} correspondente à sessão do usuário agora logado.
+Esta referência é argumento na instanciação da classe \textit{SessionMenu}, responsável pela gerência da sessão do usuário pelo processo cliente.
+Caso o usuário não seja quem ele diz ser ou o nome de usuário fornecido não esteja associado a um usuário cadastrado, ele será notificado com uma mensagem de erro.
+
+\subsection{Iniciando uma nova conversa}
+
+Para criar novas conversas, o usuário deve selecionar a opção \textit{New Chat} no menu de sessão.
+Conversas são sempre iniciadas apenas com o usuário que a criou, mas a composição de seus membros pode ser modificada com a adição de novos membros pelos membros que pertenciam a conversa ou com a saída de membros antigos.
+Conversas vazias são automaticamente removidas pelo coletor de lixo do JVM, já que não possuem referências apontando para si.
+No momento de sua criação, conversas recebem um tópico genérico, que pode posteriormente ser modificado.
+
+É interessante pensar em conversas como implementações de sistemas do tipo \textit{Publish/Subscribe}: a diretiva \textit{subscribe} corresponde a entrada de um usuário em uma conversa, o ato de \textit{unsubscribe} de um processo corresponde a saída de um usuário de uma conversa, e o envio de uma mensagem para os membros da conversa seria equivalente a \textit{publish}.
+Nesta visão, cada sessão de usuário seria um processo, ao invés de cada computador conectado ao servidor.
+É importante notar que esses números nem sempre correspondem um-a-um: não há impedimento para que um usuário faça login em mais de um computador ao mesmo tempo.
+Esta análise captura a essência da comunicação indireta desacoplada do tempo que ocorre entre os usuários quando estes se comunicam não necessariamente online ao mesmo tempo.
+
+Uma vez selecionada a opção de criar uma nova conversa no menu, a sessão de usuário manda uma requisição para o servidor, que caso suceda, irá instanciar um objeto da classe \textit{ChatImpl}, passando como argumentos uma referência ao servidor e o nome do usuário que criou o chat.
+A classe \textit{ChatImpl} implementa a interface \textit{Chat}, correspondente a uma sessão de conversa, análogo ao papel da interface \textit{Session} em relação a sessão de usuário.
+Esta classe também é responsável por armazenar as mensagens trocadas na conversa em um \textit{Vector}.
+Em seguida, essa instância é adicionada ao vetor de conversas da sessão que fez a requisição.
+Caso contrário, será exibida uma mensagem de erro.
+
+\subsection{Trocando mensagens}
+
+Caso o usuário faça parte de alguma conversa, o menu de sua sessão a exibirá antes das opções disponíveis para usuários que não participam de conversas.
+Selecionar a opção correspondente a uma conversa ocasiona a instanciação de duas classes: \textit{ChatHandler} e \textit{ChatMenu}.
+\textit{ChatMenu} trata da interação com o usuário, enquanto \textit{ChatHandler} executa as requisições feitas pelo cliente, se utilizando de invocações remotas de uma instância de \textit{Chat}.
+
+O exemplo mais claro e importante da interação entre \textit{ChatHandler} e \textit{Chat} se dá no envio de mensagens para a conversa.
+Uma vez escolhida a opção de enviar uma mensagem no menu de conversa, \textit{ChatHandler} obtém do usuário, através da entrada padrão, o conteúdo da mensagem que ele deseja enviar.
+Em seguida, é instanciado um objeto da classe \textit{Message} com o texto da mensagem e seu autor.
+Esse objeto é enviado para a conversa através da invocação remota do método \textit{sendMessage} da interface \textit{Chat}.
+
+A visualização das mensagens trocadas na conversa até agora é feita através de navegação.
+A classe \textit{ChatMenu} mantém um atributo chamado \textit{messageIndex}, responsável por indicar qual mensagem deve ser vista em relação a mensagem mais recentemente recebida na conversa.
+Não há necessidade de preocupação com a ordenação das mensagens, pois o servidor é centralizado e todas as mensagens são guardadas em um único \textit{Vector} em \textit{ChatImpl}, \textit{messages}.
+`j' avança para a mensagem mais recente (decrementando \textit{messageIndex}), caso haja, e `k' retrocede para a mensagem menos recente; `q' retorna para o menu da conversa.
+
+\subsection{Deletando um cadastro}
+
+O usuário pode a qualquer momento deletar seu próprio cadastro.
+Para fazer isso, ele deve selecionar a opção \textit{Delete account} no menu de sessão.
+Uma vez feito isso, será exibida uma pergunta para confirmar que o usuário deseja realmente deletar sua conta, já que isso implicaria sair de todas as conversas que o usuário participa e é um procedimento irreversível.
+Caso a primeira letra digitada pelo usuário seja `y', a sua conta será deletada permanentemente.
+Caso contrário o usuário será redirecionado para o menu de sessão novamente.
+
+Uma vez que o usuário seleciona a deleção de sua conta e confirma, a sessão irá chamar o método \textit{delete} que irá chamar o método \textit{removeUser} na instância do servidor que está sendo usada por aquele usuário e que recebe como argumento o nome de usuário.
+O servidor irá então remover a sessão e a credencial do usuário de suas respectivas \textit{Hashtable}s e ao retornar, a função \textit{delete} irá remover o usuário de todas as conversas das quais ele participava.
+Feito isso o usuário irá receber uma mensagem garantindo que sua conta foi deletada, e será redirecionado para o menu principal da aplicação do cliente.
 
 \end{document}
 
