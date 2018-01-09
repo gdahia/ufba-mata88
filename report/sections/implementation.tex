@@ -60,6 +60,7 @@ No momento de sua criação, conversas recebem um tópico genérico, que pode po
 É interessante pensar em conversas como implementações de sistemas do tipo \textit{Publish/Subscribe}: a diretiva \textit{subscribe} corresponde a entrada de um usuário em uma conversa, o ato de \textit{unsubscribe} de um processo corresponde a saída de um usuário de uma conversa, e o envio de uma mensagem para os membros da conversa seria equivalente a \textit{publish}.
 Nesta visão, cada sessão de usuário seria um processo, ao invés de cada computador conectado ao servidor.
 É importante notar que esses números nem sempre correspondem um-a-um: não há impedimento para que um usuário faça login em mais de um computador ao mesmo tempo.
+Esta análise captura a essência da comunicação indireta desacoplada do tempo que ocorre entre os usuários quando estes se comunicam não necessariamente online ao mesmo tempo.
 
 Uma vez selecionada a opção de criar uma nova conversa no menu, a sessão de usuário manda uma requisição para o servidor, que caso suceda, irá instanciar um objeto da classe \textit{ChatImpl}, passando como argumentos uma referência ao servidor e o nome do usuário que criou o chat.
 A classe \textit{ChatImpl} implementa a interface \textit{Chat}, correspondente a uma sessão de conversa, análogo ao papel da interface \textit{Session} em relação a sessão de usuário.
