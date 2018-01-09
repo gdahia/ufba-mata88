@@ -21,7 +21,7 @@ public class SessionHandler {
   public void fetchUserCredentials() {
     // read keypair folder from standard input
     Scanner inputReader = new Scanner(System.in);
-    System.out.print("Path to key pair folder (Empty to generate new pair): ");
+    System.out.print("Path to key pair folder: ");
     String credentialsPath = inputReader.nextLine();
 
     // retrieve keypair
@@ -46,17 +46,16 @@ public class SessionHandler {
   public Session login() {
     try {
       // get encrypted verification code
-      String encryptedVerificationCode =
-          server.getEncryptedVerificationCode(username, keys.getPublic());
+      String encryptedVerificationCode = server.getEncryptedVerificationCode(username);
 
-      // decrypt verification code
+      // decrypt verification code using private key
       String verificationCode = Crypto.decrypt(encryptedVerificationCode, keys.getPrivate(), "RSA");
 
-      // sign and encrypt verification code
-      String encryptedSignedVerificationCode =
-          Crypto.signAndEncrypt(verificationCode, keys.getPrivate(), server.getPubKey());
+      // encrypt verification code using server public key
+      String reencryptedVerificationCode =
+          Crypto.encrypt(verificationCode, server.getPubKey(), "RSA");
 
-      return server.getSession(username, encryptedSignedVerificationCode);
+      return server.getSession(username, reencryptedVerificationCode);
     } catch (Exception e) {
       System.err.println("SessionHandler, login exception: " + e.toString());
       return null;

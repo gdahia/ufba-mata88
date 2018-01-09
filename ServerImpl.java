@@ -3,16 +3,15 @@ import java.rmi.RemoteException;
 
 import java.security.KeyPair;
 import java.security.Key;
-import java.security.PublicKey;
 
 public class ServerImpl implements Server {
-  private Hashtable<String, PublicKey> userKeys;
+  private Hashtable<String, Key> userKeys;
   private Hashtable<String, String> verificationCodes;
   private Hashtable<String, Session> sessions;
   private KeyPair keys;
 
   public ServerImpl() {
-    userKeys = new Hashtable<String, PublicKey>();
+    userKeys = new Hashtable<String, Key>();
     verificationCodes = new Hashtable<String, String>();
     sessions = new Hashtable<String, Session>();
 
@@ -26,18 +25,17 @@ public class ServerImpl implements Server {
     }
   }
 
-  public Session getSession(String username, String encryptedSignedVerificationCode) {
+  public Session getSession(String username, String encryptedVerificationCode) {
     try {
-      // get corresponding stored user user keys
-      PublicKey creds = userKeys.get(username);
-
       // get corresponding verification code
       String verificationCode = verificationCodes.get(username);
 
+      // decrypt sent verification code
+      String sentVerificationCode =
+          Crypto.decrypt(encryptedVerificationCode, keys.getPrivate(), "RSA");
+
       // check user login legitimacy
-      if (creds != null && verificationCode != null
-          && Crypto.verifyEncryptedSignature(
-                 verificationCode, encryptedSignedVerificationCode, keys.getPrivate(), creds)) {
+      if (verificationCode != null && verificationCode.equals(sentVerificationCode)) {
         // remove verification code side effect
         verificationCodes.remove(username);
 
@@ -60,7 +58,7 @@ public class ServerImpl implements Server {
     }
   }
 
-  public boolean addUser(String username, PublicKey userCredentials) throws RemoteException {
+  public boolean addUser(String username, Key userCredentials) throws RemoteException {
     if (userKeys.get(username) != null)
       // do not add repeated users
       return false;
@@ -116,13 +114,14 @@ public class ServerImpl implements Server {
     return verificationCode;
   }
 
-  public String getEncryptedVerificationCode(String username, Key encryptionKey) {
+  public String getEncryptedVerificationCode(String username) {
     try {
       // get verification code
       String verificationCode = getVerificationCode(username);
 
       // encrypt verification code
-      String encryptedVerificationCode = Crypto.encrypt(verificationCode, encryptionKey, "RSA");
+      String encryptedVerificationCode =
+          Crypto.encrypt(verificationCode, userKeys.get(username), "RSA");
 
       return encryptedVerificationCode;
     } catch (Exception e) {

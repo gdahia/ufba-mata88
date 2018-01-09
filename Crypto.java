@@ -82,51 +82,6 @@ public class Crypto {
     return Base64.getEncoder().encodeToString(bytes);
   }
 
-  public static String signAndEncrypt(String data, PrivateKey signatureKey, Key encryptionKey)
-      throws GeneralSecurityException {
-    // init signature resources
-    Signature rsa = Signature.getInstance("SHA256withRSA");
-    rsa.initSign(signatureKey);
-
-    // feed data to be signed
-    rsa.update(Base64.getDecoder().decode(data));
-
-    // sign and convert signed data to string
-    byte[] signed = rsa.sign();
-    String signedData = Base64.getEncoder().encodeToString(signed);
-
-    // split into halves for encryption and encrypt
-    int halfLength = signedData.length() / 2;
-    String encryptedSignedData1 =
-        encrypt(signedData.substring(0, halfLength), encryptionKey, "RSA");
-    String encryptedSignedData2 = encrypt(signedData.substring(halfLength), encryptionKey, "RSA");
-
-    return encryptedSignedData1 + encryptedSignedData2;
-  }
-
-  public static boolean verifySignature(String signature, String data, PublicKey signatureKey)
-      throws GeneralSecurityException {
-    // init signature resources
-    Signature rsa = Signature.getInstance("SHA256withRSA");
-    rsa.initVerify(signatureKey);
-
-    // feed data to be verified
-    rsa.update(Base64.getDecoder().decode(data));
-
-    return rsa.verify(Base64.getDecoder().decode(signature));
-  }
-
-  public static boolean verifyEncryptedSignature(String data, String encryptedSignedData,
-      Key encryptionKey, PublicKey signatureKey) throws GeneralSecurityException {
-    // decrypt halves separately and concatenate
-    int halfLength = encryptedSignedData.length() / 2;
-    String signedData1 =
-        decrypt(encryptedSignedData.substring(0, halfLength), encryptionKey, "RSA");
-    String signedData2 = decrypt(encryptedSignedData.substring(halfLength), encryptionKey, "RSA");
-
-    return verifySignature(signedData1 + signedData2, data, signatureKey);
-  }
-
   public static Key getSymmetricKey() throws GeneralSecurityException {
     String keyString = secureRandomString(16);
     byte[] keyBytes = Base64.getDecoder().decode(keyString);
