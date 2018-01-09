@@ -50,8 +50,11 @@ public class ChatHandler {
 
         // decrypt contents of message to reply
         Message messageToReply = chat.getMessage(messageIndex);
-        String messageToReplyContents =
-            Crypto.decrypt(messageToReply.getContents(), chatKey, "AES");
+        String messageToReplyContents;
+        if (messageToReply.isEditable())
+          messageToReplyContents = Crypto.decrypt(messageToReply.getContents(), chatKey, "AES");
+        else
+          messageToReplyContents = messageToReply.getContents();
 
         // create and encrypt reply information
         String replyInformation =
