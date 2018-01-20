@@ -18,7 +18,15 @@
 
 \item
 
-\item
+\item Ao iniciar o algoritmo, o processo inicial \textit{p} atribui lambda à \textit{pai[p]}, ou seja, inicialmente, o grafo trata-se de um grafo vazio (possui vértices mas não possui arestas), logo, o grafo não possui nenhum ciclo.
+
+Durante a etapa de \textit{broadcast}, o processo \textit{p} manda uma mensagem \textit{m} para si mesmo, sem alterar o valor do atributo \textit{pai[p]}, portanto, o grafo não possui nenhum ciclo.
+
+Ao receber uma mensagem de si mesmo, o processo \textit{p} terá como \textit{pai[p]} o valor \textit{p}, indicando que ele é o nó raíz. Ele irá enviar uma mensagem para todos os nós vizinhos \textit{v\textsubscript{i}}, que consequentemente executarão o \textit{deliver}, irão enviar a mensagem a seus vizinhos e irão alterar o valor de \textit{pai[\textit{v\textsubscript{i}}]} para \textit{p}. Portanto o grafo não possui nenhum ciclo.
+
+Quando um processo \textit{p} recebe uma mensagem \textit{m} de um processo \textit{q}, ele irá verificar se já executou ou não \textit{deliver}. Caso ainda não tenha executado o \textit{deliver}, o processo \textit{p} irá enviar a mensagem \textit{m} para todos os processos vizinhos, irá executar o \textit{deliver} da mesagem \textit{m}, e irá alterar o valor de \textit{pai[p]} para \textit{q}. Caso ja tenha executado o \textit{deliver}, o processo \textit{p} não fará nada.
+
+Após a etapa de \textit{deliver}, o grafo não possui nenhum ciclo, pois cada processo irá executar o \textit{deliver} apenas uma vez, ou seja, ele irá alterar o atributo \textit{pai[p]} apenas uma vez, e este irá apontar para o processo que enviou uma mensagem para ele, ou seja, o processo que `descobriu' ele. Portanto em nenhum momento, durante a execução ou ao final dela, o grafo possui ciclos. 
 
 \item
 
