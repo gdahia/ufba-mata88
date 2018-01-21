@@ -8,7 +8,6 @@
  
 \title{Lista de Exercícios}
 \author{Gabriel Dahia, Pedro Vidal}
-\date{19 de Janeiro de 2018}
  
 \begin{document}
  
@@ -16,7 +15,13 @@
  
 \begin{enumerate}
 
-\item Um modelo de sistema síncrono é um modelo de sistema onde os limites de tempo são conhecidos, isto é, sabe-se o tempo máximo que um processo deve demorar para executar algo, sabe-se o tempo máximo que uma mensagem deve demorar para chegar e sabe-se a `hora' do sistema. Já num modelo de sistema assíncrono, estas garantias temporais não existem. A vantagem do modelo síncrono, é que é possível afirmar com certeza se um processo apresenta ou não uma falha ou se uma mensagem se perdeu ou não, por exemplo, mesmo que na prática, grande parte dos sistemas sejam assíncronos.
+\item
+    Um modelo de sistema distribuído é dito síncrono se existem aspectos do seu comportamento que dependem do compartilhamento, entre processos participantes, de uma mesma noção de tempo.
+    Pela definição dada, existem inúmeras maneiras de sistemas apresentarem sincronia.
+    Alguns exemplos disso são: o sistema saber o tempo máximo que um processo pode demorar para executar algo implica que os processos conhecem e concordam em um determinado momento específico para o início dessa execução; o sistema saber o tempo máximo que uma mensagem pode demorar para chegar a seu destinatário significa que os processos sabem em que momentos do passado não foram enviadas mensagens; os processos concordarem em um horário numérico significa que eles conhecem os relógios uns dos outros.
+    
+    Um modelo de sistema distribuído assíncrono, por sua vez, é tal que estas garantias temporais não existem.
+    Trabalhar com modelos síncronos apresenta vantagens, já que é possível afirmar com certeza se um processo apresenta ou não alguns tipos de falhas ou se uma mensagem foi perdida ou não, por exemplo, mesmo que, pode-se argumentar, na prática, todos os sistemas distribuídos reais são assíncronos.
 
 \item Ao iniciar o algoritmo, o processo inicial \textit{p} atribui lambda à \textit{pai[p]}, ou seja, inicialmente, o grafo trata-se de um grafo vazio (possui vértices mas não possui arestas), logo, o grafo não possui nenhum ciclo.
 
