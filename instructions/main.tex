@@ -1,0 +1,102 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage[portuguese]{babel}
+\usepackage{subfiles}
+ 
+\title{Instruções para o Sistema de Mensagens}
+\author{Bruno Guilera, Gabriel Dahia, Pedro Vidal, Ubiratan Neto}
+ 
+\begin{document}
+ 
+\maketitle
+ 
+\begin{enumerate}
+
+\item O primeiro passo é compilar os arquivos \textit{java}, para isso, basta navegar pelo terminal até a pasta com os arquivos e digitar \textit{javac *.java} no terminal.
+
+\item Feito isso, o próximo passo é realizar o \textit{bind}, e para isso basta digitar \textit{rmiregistry}, que irá localizar os objetos remotos, permitindo que eles sejam acessados remotamente. Este terminal deve ficar aberto enquanto o servidor estiver rodando.
+
+\item Para inicializar o servidor, é necessário rodar a aplicação do servidor (em outro terminal), digitando \textit{java ServerApp}. O servidor irá então se conectar ao \textit{rmiregistry} e sinalizar que está online(caso tudo dê certo).
+
+\item Para inicializar a aplicação do cliente, é necessário digitar \textit{java ClientApp} (em um terceiro terminal). Feito isso, será exibido um menu com três opções, que são:
+
+\begin{itemize}
+
+\item `1 - Sign in'
+
+\item `2 - Sign up'
+
+\item `3 - Quit'
+
+\end{itemize}
+
+Caso o usuário já possua uma conta, ele pode digitar `1' para fazer o loging, onde o usuário irá pedir o nome de usuário registrado, e irá pedir a senha (na versão sem criptografia), ou o caminho da pasta onde o usuário salvou sua chave (versão com criptografia).
+
+Caso o usuário deseje se registrar no sistema, ele deve digitar `2'. O sistema irá pedir para o usuário digitar um nome de usuário, que irá identificar o usuário. Feito isso, o sistema irá pedir que o usuário escolha uma senha (na versão sem criptografia), ou um local para guardar sua chave (versão com criptografia).
+
+Caso o usuário deseje encerrar a aplicação, basta digitar `3'.
+
+\item Ao acessar a aplicação, o usuário irá ver outro menu, com as seguintes opções:
+
+\begin{itemize}
+
+\item `1 - New chat'
+
+\item `2 - Delete account'
+
+\item `3 - Refresh menu'
+
+\item `4 - Leave char'
+
+\item `5 - Log out'
+
+\end{itemize}
+
+Para criar uma nova conversa, o usuário deve selecionar a opção `New chat', que irá criar um grupo cujo único membro é o usuário que criou a conversa. Isso irá modificar os números mostrados no menu, por isso, as funcionalidades serão referenciadas apenas pelo nome a partir daqui.
+
+Caso o usuário queira apagar sua conta, ele deve selecionar a opção `Delete account', feito isso, o sistema irá perguntar se ele de fato deseja deletar sua conta, uma vez que isso é irreversível. Caso o usuário realmente deseje deletar sua conta, ele deve digitar `y', qualquer coisa que não comece com `y' será considerada como não.
+
+Caso o usuário seja adicionado a alguma conversa por outro usuário, ele não será capaz de ver, a não ser que selecione a opção `Refresh menu', que irá atualizar a lista de chats do usuário.
+
+Caso o usuário deseje sair de alguma conversa específica, ele pode selecionar a opção `Leave chat', que irá pedir para o usuário digitar o index da conversa da qual ele dejesa sair. O usuário deve então digitar o index da conversa que deseja sair, e feito isso, será removido desta conversa.
+
+Para encerrar a sessão atual o usuário deve selecionar a opção `Log out', que irá redirecionar o usuário para o menu inicial da aplicação do cliente.
+
+\item Ao selecionar uma conversa, o usuário será redirecionado para o menu de conversa, que apresentará as seguintes opções:
+
+\begin{itemize}
+
+\item `1 - Send message'
+
+\item `2 - See message log'
+
+\item `3 - Add new user'
+
+\item `4 - Change topic'
+
+\item `5 - Display members'
+
+\item `6 - Quit'
+
+Ao selecionar a opção `1 - Send message', o sistema irá esperar que o usuário digite a mensagem que deseja enviar para esta conversa. A mensagem será enviada ao digitar enter.
+
+Para visualizar as mensagens da conversa o usuário deve seleciona a opção `2 - See message log', que irá redirecionar o usuário para o ambiemte de visualização de mensagens. Para navegar pelas mensagens, o usuário deve utilizar as teclas `j' para ir para baixo, ou seja, ir em direção a mensagens mais novas, ou `k', para ir para cima, em direção a mensagens antigas. O usuário pode escrever uma resposta para uma mensagem, digitando `r' ao chegar a mensagem que se deseja responder. O usuário pode deletar uma mensagem, contanto que seja o autor da mesma, digitando `d', ao chegar a mensagem que se deseja apagar. Para sair do ambiente de visualização de mensagens o usuário deve digitar `q', e será redirecionado ao menu de conversa.
+
+Para adicionar um outro usuário a conversa, o usuário deve selecionar a opção `3 - Add new user', e feito isso digitar o nome do usuário que se deseja adicionar.
+
+Para trocar o tópico da conversa, ou o nome do grupo, o usuário deve selecionar a opção `4 - Change topic', e digitar o novo tópico, que será exibido no menu principal da aplicação do cliente.
+
+Ao selecionar a opção `5 - Display members', os membros do grupo serão exibidos.
+
+Para voltar ao menu do cliente, o usuário deve selecionar a opção `6 - Quit'.
+
+\end{itemize}
+
+
+\end{enumerate}
+
+ 
+\end{document}
