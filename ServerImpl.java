@@ -1,16 +1,16 @@
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.rmi.RemoteException;
 
 public class ServerImpl implements Server {
-  private Hashtable<String, String> credentials;
-  private Hashtable<String, Session> sessions;
+  private HashMap<String, String> credentials;
+  private HashMap<String, Session> sessions;
 
   public ServerImpl() {
-    credentials = new Hashtable<String, String>();
-    sessions = new Hashtable<String, Session>();
+    credentials = new HashMap<String, String>();
+    sessions = new HashMap<String, Session>();
   }
 
-  public Session getSession(String username, String userCredentials) {
+  public synchronized Session getSession(String username, String userCredentials) {
     // get corresponding stored user credentials
     String creds = credentials.get(username);
 
@@ -22,7 +22,8 @@ public class ServerImpl implements Server {
       return null;
   }
 
-  public boolean addUser(String username, String userCredentials) throws RemoteException {
+  public synchronized boolean addUser(String username, String userCredentials)
+      throws RemoteException {
     if (credentials.get(username) != null)
       // do not add repeated users
       return false;
@@ -39,7 +40,7 @@ public class ServerImpl implements Server {
     }
   }
 
-  public void addChat(Session sess) throws RemoteException {
+  public synchronized void addChat(Session sess) throws RemoteException {
     // get chat creator username
     String username = sess.getUsername();
 
@@ -55,7 +56,7 @@ public class ServerImpl implements Server {
     }
   }
 
-  public boolean addUserToChat(String username, Chat chat) {
+  public synchronized boolean addUserToChat(String username, Chat chat) {
     // attempt to get user session corresponding to given username
     Session sess = sessions.get(username);
 
@@ -73,7 +74,7 @@ public class ServerImpl implements Server {
     }
   }
 
-  public void removeUser(String username) {
+  public synchronized void removeUser(String username) {
     sessions.remove(username);
     credentials.remove(username);
     System.out.println("User \"" + username + "\" was deleted");

@@ -1,5 +1,5 @@
 import java.util.Scanner;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class ChatHandler {
   private String username;
@@ -129,7 +129,7 @@ public class ChatHandler {
 
   public void displayMembers() {
     try {
-      Vector<String> usernames = chat.getUsernames();
+      ArrayList<String> usernames = chat.getUsernames();
       System.out.println("Members:");
       for (String username : usernames) System.out.println(username);
     } catch (Exception e) {

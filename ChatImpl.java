@@ -1,13 +1,13 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class ChatImpl extends UnicastRemoteObject implements Chat {
   private static Message bottomMessage = new Message("System", "<<At end.>>", false);
   private static Message topMessage = new Message("System", "<<No older message>>.", false);
-  private Vector<String> users;
-  private Vector<Message> messages;
+  private ArrayList<String> users;
+  private ArrayList<Message> messages;
   private String topic;
   private Server server;
 
@@ -16,11 +16,11 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
     this.server = server;
 
     // create users vector and put chat creator in it
-    users = new Vector<String>();
+    users = new ArrayList<String>();
     users.add(username);
 
     // create messages vector and put empty message in it
-    messages = new Vector<Message>();
+    messages = new ArrayList<Message>();
     messages.add(topMessage);
 
     // get generic chat topic
@@ -31,11 +31,11 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
     sendMessage(creation);
   }
 
-  public void sendMessage(Message message) {
+  public synchronized void sendMessage(Message message) {
     messages.add(message);
   }
 
-  public Message getMessage(int messageIndex) {
+  public synchronized Message getMessage(int messageIndex) {
     if (messageIndex == 0)
       return bottomMessage;
     else if (messageIndex < messages.size())
@@ -44,19 +44,19 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
       return topMessage;
   }
 
-  public void setTopic(String topic) {
+  public synchronized void setTopic(String topic) {
     this.topic = topic;
   }
 
-  public Vector<String> getUsernames() {
+  public synchronized ArrayList<String> getUsernames() {
     return users;
   }
 
-  public String getTopic() {
+  public synchronized String getTopic() {
     return topic;
   }
 
-  public boolean addUser(String username) {
+  public synchronized boolean addUser(String username) {
     try {
       // check if user is to be added to the chat
       if (users.contains(username) || !server.addUserToChat(username, this))
@@ -78,21 +78,21 @@ public class ChatImpl extends UnicastRemoteObject implements Chat {
     }
   }
 
-  public int getNumMessages() {
+  public synchronized int getNumMessages() {
     return messages.size();
   }
 
-  public void removeUser(String username) {
+  public synchronized void removeUser(String username) {
     Message userLeft = new Message("System", "<<\"" + username + "\" has left this chat>>", false);
     this.sendMessage(userLeft);
     users.remove(username);
   }
 
-  public void editMessage(int messageIndex, String messageContents) {
+  public synchronized void editMessage(int messageIndex, String messageContents) {
     messages.get(messageIndex).setContents(messageContents);
   }
 
-  public void deleteMessage(int messageIndex) {
+  public synchronized void deleteMessage(int messageIndex) {
     messages.remove(messageIndex);
   }
 }
