@@ -1,13 +1,50 @@
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.rmi.RemoteException;
 
 public class ServerImpl implements Server {
   private HashMap<String, String> credentials;
   private HashMap<String, Session> sessions;
+  private ArrayList<Server> replicas;
 
   public ServerImpl() {
     credentials = new HashMap<String, String>();
     sessions = new HashMap<String, Session>();
+    replicas = new ArrayList<Server>();
+  }
+
+  public ServerImpl(Server mainServer) {
+    this();
+
+    try {
+      mainServer.connectNewReplica(this);
+    } catch (Exception e) {
+      System.err.println("ServerImpl, ServerImpl exception: " + e.toString());
+    }
+  }
+
+  public synchronized void connectNewReplica(Server newReplica) {
+    // connect to every other replica
+    for (Server replica : replicas) {
+      try {
+        newReplica.addReplica(replica);
+        replica.addReplica(newReplica);
+      } catch (Exception e) {
+        System.err.println("ServerImpl, connectNewReplica exception (1): " + e.toString());
+      }
+    }
+
+    // connect itself
+    try {
+      this.addReplica(newReplica);
+      newReplica.addReplica(this);
+    } catch (Exception e) {
+      System.err.println("ServerImpl, connectNewReplica exception (2): " + e.toString());
+    }
+  }
+
+  public synchronized void addReplica(Server server) {
+    replicas.add(server);
   }
 
   public synchronized Session getSession(String username, String userCredentials) {

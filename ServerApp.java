@@ -6,13 +6,21 @@ import java.rmi.server.UnicastRemoteObject;
 public class ServerApp {
   public static void main(String[] args) {
     String hostname = (args.length < 1) ? "127.0.0.1" : args[0];
-    // int port = (args.length < 2) ? 6006 : args[1];
     int port = 6006;
 
     try {
       System.setProperty("java.rmi.server.hostname", hostname);
 
-      ServerImpl server = new ServerImpl();
+      // create replica or first server
+      ServerImpl server;
+      if (args.length < 2)
+        server = new ServerImpl();
+      else {
+        Registry registry = LocateRegistry.getRegistry(args[1]);
+        Server mainServer = (Server) registry.lookup("Server");
+        server = new ServerImpl(mainServer);
+      }
+
       Server stub = (Server) UnicastRemoteObject.exportObject(server, port);
 
       Registry registry = LocateRegistry.getRegistry();
