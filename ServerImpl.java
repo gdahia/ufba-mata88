@@ -1,19 +1,20 @@
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
-public class ServerImpl implements Server {
+public class ServerImpl extends UnicastRemoteObject implements Server {
   private HashMap<String, String> credentials;
   private HashMap<String, Session> sessions;
   private ArrayList<Server> replicas;
 
-  public ServerImpl() {
+  public ServerImpl() throws RemoteException {
     credentials = new HashMap<String, String>();
     sessions = new HashMap<String, Session>();
     replicas = new ArrayList<Server>();
   }
 
-  public ServerImpl(Server mainServer) {
+  public ServerImpl(Server mainServer) throws RemoteException {
     this();
 
     try {

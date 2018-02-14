@@ -12,7 +12,7 @@ public class ServerApp {
       System.setProperty("java.rmi.server.hostname", hostname);
 
       // create replica or first server
-      ServerImpl server;
+      Server server;
       if (args.length < 2)
         server = new ServerImpl();
       else {
@@ -21,10 +21,8 @@ public class ServerApp {
         server = new ServerImpl(mainServer);
       }
 
-      Server stub = (Server) UnicastRemoteObject.exportObject(server, port);
-
       Registry registry = LocateRegistry.getRegistry();
-      registry.bind("Server", stub);
+      registry.bind("Server", server);
 
       System.out.println("Server online");
 
