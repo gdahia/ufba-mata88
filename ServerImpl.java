@@ -1,19 +1,19 @@
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.rmi.RemoteException;
 
 import java.security.KeyPair;
 import java.security.Key;
 
 public class ServerImpl implements Server {
-  private Hashtable<String, Key> userKeys;
-  private Hashtable<String, String> verificationCodes;
-  private Hashtable<String, Session> sessions;
+  private HashMap<String, Key> userKeys;
+  private HashMap<String, String> verificationCodes;
+  private HashMap<String, Session> sessions;
   private KeyPair keys;
 
   public ServerImpl() {
-    userKeys = new Hashtable<String, Key>();
-    verificationCodes = new Hashtable<String, String>();
-    sessions = new Hashtable<String, Session>();
+    userKeys = new HashMap<String, Key>();
+    verificationCodes = new HashMap<String, String>();
+    sessions = new HashMap<String, Session>();
 
     // creates server RSA 2048-bit key pair
     try {
@@ -58,7 +58,7 @@ public class ServerImpl implements Server {
     }
   }
 
-  public boolean addUser(String username, Key userCredentials) throws RemoteException {
+  public synchronized boolean addUser(String username, Key userCredentials) throws RemoteException {
     if (userKeys.get(username) != null)
       // do not add repeated users
       return false;
@@ -75,7 +75,7 @@ public class ServerImpl implements Server {
     }
   }
 
-  public boolean addUserToChat(String username, Chat chat) {
+  public synchronized boolean addUserToChat(String username, Chat chat) {
     // attempt to get user session corresponding to given username
     Session sess = sessions.get(username);
 
@@ -94,7 +94,7 @@ public class ServerImpl implements Server {
     }
   }
 
-  public void removeUser(String username) {
+  public synchronized void removeUser(String username) {
     sessions.remove(username);
     userKeys.remove(username);
     System.out.println("User \"" + username + "\" was deleted");

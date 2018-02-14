@@ -1,5 +1,5 @@
 import java.util.Scanner;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.security.KeyPair;
 import java.security.Key;
 import javax.crypto.SealedObject;
@@ -10,7 +10,7 @@ public class SessionMenu {
     boolean deleted = false;
 
     try {
-      Vector<String> chats = sess.getChatList();
+      ArrayList<String> chats = sess.getChatList();
       printSessionMenu(chats);
 
       // menu loop
@@ -94,7 +94,7 @@ public class SessionMenu {
     return false;
   }
 
-  private void printSessionMenu(Vector<String> chats) {
+  private void printSessionMenu(ArrayList<String> chats) {
     // 1st to len-th session menu options are chats
     int len = chats.size();
     for (int i = 0; i < len; i++) System.out.println((i + 1) + " - " + chats.get(i));
@@ -109,7 +109,7 @@ public class SessionMenu {
 
   private void leaveChat(Session sess) {
     try {
-      Vector<String> chats = sess.getChatList();
+      ArrayList<String> chats = sess.getChatList();
       int len = chats.size();
       if (len == 0)
         // empty chat list

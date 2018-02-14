@@ -1,0 +1,163 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[
+  margin=3.5cm
+]{geometry}
+\usepackage[portuguese]{babel}
+\usepackage{amsmath}
+ 
+\title{}
+\author{Universidade Federal da Bahia \\ MATA88 - Fundamentos de Sistemas Distribuídos \\ Prof. Flávio Assis \\ \begingroup
+  \fontsize{10pt}{12pt}\selectfont
+  Semestre 2017.2 - 3 de Fevereiro de 2018
+\endgroup}
+\date{Lista de Exercícios \\ \begingroup
+  \fontsize{10pt}{12pt}\selectfont
+  Bruno Guilera, Gabriel Dahia, Pedro Vidal
+\endgroup}
+ 
+\begin{document}
+ 
+\maketitle
+\vspace{-15pt}
+ 
+% 1
+1. Um modelo de sistema distribuído é dito síncrono se existem aspectos do seu comportamento que dependem do compartilhamento, entre processos participantes, de uma mesma noção de tempo.
+Pela definição dada, existem inúmeras maneiras de sistemas apresentarem sincronia.
+Alguns exemplos disso são: o sistema saber o tempo máximo que um processo pode demorar para executar algo implica que os processos conhecem e concordam em um determinado momento específico para o início dessa execução; o sistema saber o tempo máximo que uma mensagem pode demorar para chegar a seu destinatário significa que os processos sabem em que momentos do passado não foram enviadas mensagens; os processos concordarem em um horário numérico significa que eles conhecem os relógios uns dos outros.
+
+Um modelo de sistema distribuído assíncrono, por sua vez, é tal que estas garantias temporais não existem. Trabalhar com modelos síncronos apresenta vantagens, já que é possível afirmar com certeza se um processo apresenta ou não alguns tipos de falhas ou se uma mensagem foi perdida ou não, por exemplo, mesmo que, pode-se argumentar, na prática, todos os sistemas distribuídos reais são assíncronos.
+
+\bigskip
+
+% 2
+2. Suponha, por contradição, que há um ciclo no grafo induzido pelos valores da variável $pai[p]$.
+Seja $p$ o processo cujo envio de mensagens $m$ a seus vizinhos estabelece a aresta que fecha o ciclo.
+$pai[p]$ pode assumir dois valores: ou é $p$ ou um de seus vizinhos.
+Se $pai[p] = p$, então $p$ é o processo inicial e não há ainda arestas quando a mensagem $m$ é enviada a seus vizinhos, uma contradição a formação do ciclo.
+
+Se, por outro lado, $pai[p] = q$, para algum outro processo $q$, tome $r$, um dos processos vizinhos de $p$ o qual a adição da aresta $(p, r)$ ao grafo ocasiona um ciclo.
+Como a adição da aresta $(p, r)$ ocasiona um ciclo, já existem arestas com uma extremidade em $r$.
+Para que esse seja o caso, é necessário que $r$ tenha recebido uma mensagem $m$ de algum outro processo e, consequentemente, tenha executado $deliver(m)$ anteriormente.
+Isso torna impossível a adição da aresta $(p, r)$, já que uma checagem é feita para que apenas processos que ainda não executaram $deliver(m)$ possam fazer $pai[r] \leftarrow p$.
+Contradição.
+
+Disso, vemos que não há ciclos no grafo gerado pelo algoritmo.
+
+\bigskip
+
+% 3
+3. Diferenciaremos as semânticas através de suas caracterizações: a semântica \textit{maybe} transmite a mensagem de requisição apenas uma vez.
+Caso ocorra alguma falha no servidor ou a mensagem se perca, a requisição não será atendida.
+Este tipo de semântica é utilizado quando certas falhas são toleráveis.
+
+A semântica \textit{at-least-once} garante que o usuário irá receber um resultado, caso a requisição seja atendida, ou uma exceção, caso tenha ocorrido algum erro no servidor.
+Para garantir que o comando foi executado pelo menos uma vez, a mensagem é transmitida até obter sucesso (caso não ocorra falhas no servidor, a requisição será atendida pelo menos uma vez).
+Este tipo de semântica, porém, pode gerar erros caso o comando seja executado mais de uma vez e a operação requisitada não seja idempotente.
+Por exemplo, um comando para incrementar um contador, se executado mais de uma vez, não terá o mesmo resultado que uma única sua execução, enquanto um comando para ativar uma \textit{flag} pode ser executado diversas vezes, uma vez que, ativada a \textit{flag}, o comando para ativá-la novamente não tem efeito.
+
+A semântica \textit{at-most-once} garante que a instrução será executada no máximo uma vez e, no caso onde o servidor não falha, exatamente uma vez.
+Para garantir isso, mensagens são retransmitidas quando se recebem erros e requisições duplicadas são filtradas no servidor para que não sejam reexecutadas. 
+
+A ausência de sincronia ou confiabilidade em um sistema distribuído faz com que não seja possível garantir que uma requisição remota foi atendida ou não.
+Não há uma única forma de lidar com esse problema e as maneiras conhecidas se adequam a circunstâncias diferentes.
+A existência de diferentes tipos de semântica, então, padroniza esses comportamentos e reflete as necessidades diversas associadas aos sistemas que fazem requisições remotas.
+
+
+\bigskip
+
+% 4
+
+4. Consideremos três processos, $p_1$, $p_2$ e $p_3$.
+$p_1$ envia uma mensagem $m_1$ a cada um dos outros dois processos.
+$p_2$, ao receber $m_1$, envia aos outros processos uma mensagem $m_2$.
+
+Uma ordenação FIFO das mensagens acima que não é também uma ordenação total pode ocorrer se $p_3$ receber, nessa ordem, $m_2$ e $m_1$.
+Se considerarmos apenas os processos de origem, $m_1$ e $m_2$ foram entregues na ordem em que foram enviadas para $p_3$, mas a dependência causal entre essas mensagens foi perdida.
+
+Uma ordenação total dessas mesmas mensagens pode ser obtida estabelecendo uma ordem total de todos os eventos ocorridos.
+Propomos, então, a seguinte ordem:
+
+\begin{enumerate}
+  \item $p_1$ envia $m_1$;
+  \item $p_2$ recebe $m_1$;
+  \item $p_3$ recebe $m_1$;
+  \item $p_2$ envia $m_2$;
+  \item $p_1$ recebe $m_2$;
+  \item $p_3$ recebe $m_2$.
+\end{enumerate}
+
+A indexação fornecida para os eventos atende a condição de relógio e a ordenação proposta atende a relação $\implies$ vista durante o curso.
+Esta é, portanto, uma ordenação total dos eventos da situação considerada e, consequentemente, das mensagens enviadas.
+
+\bigskip
+
+% 5
+
+5. \textit{Middleware} é um software que atua como uma camada de abstração entre o sistema operacional e a aplicação sendo executada, fornecendo um conjunto de primitivas de comunicação e controle de dados mais convenientes para os desenvolvedores.
+No contexto de sistemas distribuídos, \textit{middleware} permite a interoperabilidade entre as diversas aplicações independentemente do sistema operacional.
+Entre as responsabilidades do \textit{middleware} vale ressaltar: serviço de persistência de dados, controle de concorrência e notificação de eventos, controle de localização e fluxo de dados.
+\textit{Middleware} também pode ser associado ao modelo de arquitetura \textit{tiered}, no qual seria responsável por implementar a comunicação dos componentes entre uma camada e outra.
+ 
+\bigskip
+
+% 6
+
+6. Suponha, por contradição, que o algoritmo de Exclusão Mútua apresentado durante o curso não satisfaça a propriedade 2.
+Isto é, existe uma solicitação de acesso ao recurso que foi atendida antes de uma solicitação feita previamente.
+
+Seja $p_1$ o processo cuja solicitação de acesso ao recurso deixou de ser atendida e $p_2$ o processo cuja solicitação foi indevidamente atendida antes da solicitação de $p_1$.
+Para que $p_2$ tenha obtido acesso ao recurso, tem que existir uma mensagem $t_m : p_2$ \textit{requests resource} ordenada antes de todas as outras requisições na fila de $p_2$ e este processo recebeu uma mensagem de cada um dos outros processos com \textit{timestamp} maior que $t_m$.
+
+Como $p_1$ solicitou o recurso antes de $p_2$, a mensagem $t_n$: $p_1$ \textit{requests resource} tem \textit{timestamp} $t_n < t_m$ e, dessa forma, não pode ter sido recebida por $p_2$.
+Contudo, $p_2$ recebeu uma mensagem de cada um dos processos, inclusive $p_1$, com \textit{timestamp} maior que $t_m$.
+Esta mensagem tem \textit{timestamp} $t_q > t_m$ e, consequentemente, $t_q > t_n$.
+Como a mensagem de requisição de $p_1$ não foi recebida por $p_2$, a mensagem de \textit{timestamp} $t_q$ foi entregue a $p_2$ antes de uma mensagem previamente enviada pelo mesmo processo remetente, uma contradição do modelo assumido para o algoritmo.
+
+\bigskip
+
+% 7
+7. O tipo de falha denominado \textit{crash} ocorre quando um processo $p$ para inesperadamente.
+Por isso, os outros processos, quando enviam uma mensagem para o processo $p$ e não recebem resposta, podem concluir que o processo $p$ parou de funcionar.
+
+O tipo de falha \textit{crash}/\textit{recovery} ocorre quando um processo para inesperadamente, mas consegue se recuperar.
+Isto pode acontecer se forem implementadas medidas como salvar \textit{checkpoints}, que permitem que o processo continue de onde parou, ou então replicação de processos, para que outro processo possa assumir o lugar do processo que apresentou a falha.
+
+Falhas bizantinas são falhas onde um processo funciona incorretamente, podendo fornecer informações inconsistentes e prejudiciais ao sistema, como por exemplo afirmar $\alpha$ para o processo $x$ e afirmar $\lnot\alpha$ para o processo $y$.
+
+\bigskip
+
+% 8
+8. Seja $c$ o processo correto que nunca é suspeito, e $p$ um outro processo que tenha chegado ao fim da fase 1 do algoritmo.
+Queremos demonstrar que $V_c \leq V_p$ ao final da fase 1.
+
+Como o processo $c$ nunca é suspeito, então em cada uma $n - 2$ das rodadas da fase 1, o processo $p$ recebeu uma mensagem de $c$ contendo $\Delta c$.
+Assim, cada uma das mudanças em $V_c$ ocorridas nas $n - 2$ primeiras rodadas foram transmitidas para $p$; caso ocorra uma mudança em $V_c$ na $(n - 1)$-ésima rodada, essa mudança foi transmitida $n - 2$ vezes entre processos para que ainda esteja em algum $q$, para um dado processo $q$ que a tenha transmitido a $c$.
+A transmissão até $c$ configura, então, um caminho de tamanho $n - 1$ no grafo dos processos.
+Pelo tamanho do caminho, $p$ tem que estar entre os processos que transmitiram a mensagem em algum momento e, portanto, conhece a mudança ocasionada em $V_c$ na $(n - 1)$-ésima rodada da fase 1.
+
+Como $V_p$ conhece todas as mudanças em $V_c$ e o algoritmo usa comunicação de mudanças ao vetor de votos para atualização do vetor de votos, o vetor de votos $V_p$ conhece o vetor de votos $V_c$ e temos que $V_c \leq V_p$.
+
+\bigskip
+
+% 9
+9. A partir da história $H$, obtemos o grafo de serializabilidade $SG(H) = t_1 \rightarrow t_3 \leftarrow t_2$.
+Como este grafo é acíclico, pelo Teorema da Serializabilidade, $H$ é serializável.
+
+No entanto, a história $H$ não é recuperável: a transação $t_3$ lê da transação $t_1$ - $r_3[x]$ ocorre depois de $w_1[x]$, nenhuma outra transação escreve em $x$ entre essas operações e $t_1$ não é abortada - e $t_3$ é efetivada antes de $t_1$.
+
+\bigskip
+
+% 10
+10. As ações que um processo $p$ não coordenador pode decidir tomar ao se recuperar de uma falha dependem de quando a falha do processo ocorreu. Caso esse processo falhe antes de enviar seu voto ao processo coordenador, $p$ pode decidir por abortar, enviando o voto ``\textit{Não}'' em seguida.
+
+Se $p$ falhou em algum momento depois de receber a mensagem de ``\textit{Commit}'' ou ``\textit{Abort}'' do coordenador, então ele pode decidir tomar a ação definida pela mensagem recebida do coordenador.
+
+Caso $p$ falhe durante o momento de incerteza, ou seja, após enviar o voto de ``\textit{Sim}'', mas antes de receber uma resposta do coordenador, ele deve tentar se comunicar com outros processos para saber qual decisão foi tomada.
+Quando todos os processos falham, e nenhum sabe qual ação foi tomada, o processo $p$ fica bloqueado.
+Se existir pelo menos um processo que saiba qual ação foi decidida, então $p$ também irá decidir pela mesma ação.
+
+Para que possa se recuperar, o processo deve manter em uma memória estável as etapas já efetuadas, ou seja, sua decisão, caso ja tenha decidido e a mensagem do coordenador, caso já tenha sido recebida.
+
+\end{document}

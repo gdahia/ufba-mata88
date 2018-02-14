@@ -1,4 +1,4 @@
-import java.util.Vector;
+import java.util.ArrayList;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import javax.crypto.SealedObject;
@@ -6,27 +6,27 @@ import javax.crypto.SealedObject;
 public class SessionImpl extends UnicastRemoteObject implements Session {
   private Server server;
   private String username;
-  private Vector<Chat> chats;
+  private ArrayList<Chat> chats;
 
   public SessionImpl(String username, Server server) throws RemoteException {
     super();
     this.username = username;
     this.server = server;
-    chats = new Vector<Chat>();
+    chats = new ArrayList<Chat>();
   }
 
-  public void addChat(Chat chat) throws RemoteException {
+  public synchronized void addChat(Chat chat) throws RemoteException {
     chats.add(chat);
   }
 
-  public Vector<String> getChatList() throws RemoteException {
+  public synchronized ArrayList<String> getChatList() throws RemoteException {
     // get updated copy of chat topics
-    Vector<String> chatNames = new Vector<String>();
+    ArrayList<String> chatNames = new ArrayList<String>();
     for (Chat chat : chats) chatNames.add(chat.getTopic());
     return chatNames;
   }
 
-  public void newChat(SealedObject encryptedChatKey) {
+  public synchronized void newChat(SealedObject encryptedChatKey) {
     try {
       // create new chat
       Chat chat = new ChatImpl(server, username, encryptedChatKey);
@@ -41,15 +41,15 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
     }
   }
 
-  public Chat getChat(int index) {
+  public synchronized Chat getChat(int index) {
     return chats.get(index);
   }
 
-  public String getUsername() {
+  public synchronized String getUsername() {
     return username;
   }
 
-  public void delete() throws RemoteException {
+  public synchronized void delete() throws RemoteException {
     // remove from server
     server.removeUser(username);
 
@@ -57,7 +57,7 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
     for (Chat chat : chats) chat.removeUser(username);
   }
 
-  public void leaveChat(int index) throws RemoteException {
+  public synchronized void leaveChat(int index) throws RemoteException {
     // remove user from chat
     chats.get(index).removeUser(username);
 

@@ -1,6 +1,6 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.crypto.SealedObject;
 
 public interface Chat extends Remote {
@@ -8,7 +8,7 @@ public interface Chat extends Remote {
   public Message getMessage(int messageIndex) throws RemoteException;
   public void setTopic(String topic) throws RemoteException;
   public String getTopic() throws RemoteException;
-  public Vector<String> getUsernames() throws RemoteException;
+  public ArrayList<String> getUsernames() throws RemoteException;
   public boolean addUser(String username, SealedObject encryptedUserKey) throws RemoteException;
   public int getNumMessages() throws RemoteException;
   public void removeUser(String username) throws RemoteException;

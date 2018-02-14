@@ -10,8 +10,8 @@ Dentre as ferramentas nativas de Java, a mais importante para o projeto foi Java
 A importância de Java RMI é tal que dois processos que se comunicam diretamente só o fazem através de invocações remotas de métodos.
 
 Além de Java RMI, a simplicidade para o tratamento de ações concorrentes em Java, também uma funcionalidade nativa da linguagem, tornou a implementação do trabalho muito mais fácil do que seria em alguma outra linguagem não tão apta a tarefa.
-Já em estágio de desenvolvimento avançado do projeto, contudo, foi descoberto que os mecanismos de Java utilizados nesse trabalho para o tratamento de concorrência (o uso da classe \textit{Vector} ao invés da mais comumente utilizada \textit{ArrayList}, por exemplo) são pouco recomendados pela comunidade por falhas e que é mais apropriado utilizar novos métodos (como métodos \textit{synchronized} e a classe \textit{CopyOnWriteArrayList}).
-Entretanto, os testes não conseguiram detectar problemas na implementação e, por isso, esse foi considerado um problema menor.
+A versão anterior do projeto utilizava mecanismos de Java para o tratamento de concorrência (o uso da classe \textit{Vector} ao invés da mais comumente utilizada \textit{ArrayList}, por exemplo) que são pouco recomendados pela comunidade por falhas.
+Isso foi corrigido com utilização de métodos \textit{synchronized} nos locais apropriados e problemas de concorrência não devem mais ser observados.
 
 \subsection{Conexão entre clientes e servidor}
 
@@ -64,7 +64,7 @@ Esta análise captura a essência da comunicação indireta desacoplada do tempo
 
 Uma vez selecionada a opção de criar uma nova conversa no menu, a sessão de usuário manda uma requisição para o servidor, que caso suceda, irá instanciar um objeto da classe \textit{ChatImpl}, passando como argumentos uma referência ao servidor e o nome do usuário que criou o chat.
 A classe \textit{ChatImpl} implementa a interface \textit{Chat}, correspondente a uma sessão de conversa, análogo ao papel da interface \textit{Session} em relação a sessão de usuário.
-Esta classe também é responsável por armazenar as mensagens trocadas na conversa em um \textit{Vector}.
+Esta classe também é responsável por armazenar as mensagens trocadas na conversa em um \textit{ArrayList}.
 Em seguida, essa instância é adicionada ao vetor de conversas da sessão que fez a requisição.
 Caso contrário, será exibida uma mensagem de erro.
 
@@ -81,7 +81,7 @@ Esse objeto é enviado para a conversa através da invocação remota do método
 
 A visualização das mensagens trocadas na conversa até agora é feita através de navegação.
 A classe \textit{ChatMenu} mantém um atributo chamado \textit{messageIndex}, responsável por indicar qual mensagem deve ser vista em relação a mensagem mais recentemente recebida na conversa.
-Não há necessidade de preocupação com a ordenação das mensagens, pois o servidor é centralizado e todas as mensagens são guardadas em um único \textit{Vector} em \textit{ChatImpl}, \textit{messages}.
+Não há necessidade de preocupação com a ordenação das mensagens, pois o servidor é centralizado e todas as mensagens são guardadas em um único \textit{ArrayList} em \textit{ChatImpl}, \textit{messages}.
 `j' avança para a mensagem mais recente (decrementando \textit{messageIndex}), caso haja, e `k' retrocede para a mensagem menos recente; `q' retorna para o menu da conversa.
 
 \subsection{Deletando um cadastro}
@@ -93,7 +93,7 @@ Caso a primeira letra digitada pelo usuário seja `y', a sua conta será deletad
 Caso contrário o usuário será redirecionado para o menu de sessão novamente.
 
 Uma vez que o usuário seleciona a deleção de sua conta e confirma, a sessão irá chamar o método \textit{delete} que irá chamar o método \textit{removeUser} na instância do servidor que está sendo usada por aquele usuário e que recebe como argumento o nome de usuário.
-O servidor irá então remover a sessão e a credencial do usuário de suas respectivas \textit{Hashtable}s e ao retornar, a função \textit{delete} irá remover o usuário de todas as conversas das quais ele participava.
+O servidor irá então remover a sessão e a credencial do usuário de suas respectivas \textit{HashMap}s e ao retornar, a função \textit{delete} irá remover o usuário de todas as conversas das quais ele participava.
 Feito isso o usuário irá receber uma mensagem garantindo que sua conta foi deletada, e será redirecionado para o menu principal da aplicação do cliente.
 
 \end{document}
