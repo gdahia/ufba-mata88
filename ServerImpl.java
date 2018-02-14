@@ -4,14 +4,20 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ServerImpl extends UnicastRemoteObject implements Server {
+  private String hostname;
   private HashMap<String, String> credentials;
   private HashMap<String, Session> sessions;
   private ArrayList<Server> replicas;
 
   public ServerImpl() throws RemoteException {
+    hostname = System.getProperty("java.rmi.server.hostname");
     credentials = new HashMap<String, String>();
     sessions = new HashMap<String, Session>();
     replicas = new ArrayList<Server>();
+  }
+
+  public String getHostname() {
+    return hostname;
   }
 
   public ServerImpl(Server mainServer) throws RemoteException {
@@ -45,7 +51,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
   }
 
   public synchronized void addReplica(Server server) {
-    replicas.add(server);
+    try {
+      String serverHostname = server.getHostname();
+      replicas.add(server);
+      System.out.println("Connected to server at " + serverHostname);
+    } catch (Exception e) {
+      System.err.println("ServerImpl, addReplica exception: " + e.toString());
+    }
   }
 
   public synchronized Session getSession(String username, String userCredentials) {
