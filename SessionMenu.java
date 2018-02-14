@@ -50,7 +50,7 @@ public class SessionMenu {
         }
       }
     } catch (Exception e) {
-      System.err.println("Client, sessionMenu exception(2): " + e.toString());
+      System.err.println("SessionMenu, SessionMenu exception(2): " + e.toString());
     }
 
     // do not print logout message if account was deleted
