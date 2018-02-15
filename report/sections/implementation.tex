@@ -26,7 +26,7 @@ Como a visão do servidor é consistente entre réplicas, isso equivale a dizer 
 Se fóssemos modelar como um grafo a relação $R$, onde $aRb$ sse ``há referência de $a$ em \textit{replicas} de $b$'', teríamos um grafo direcionado completo sem laços.
 
 Para fazer com que as réplicas concordem na visão do servidor, tratamos \textit{replicas} através das réplicas como um único recurso a ser compartilhado pelas réplicas, o qual chamamos \textbf{vision}.
-Para garantir que a visão do servidor permaneça consistente mesmo com a adição de novas réplicas, utilizamos o algoritmo de exclusão mútua de Lamport \textit{et al.}~\cite{lamport-logical-clocks} para gerenciar o acesso à \textbf{vision}.
+Para garantir que a visão do servidor permaneça consistente mesmo com a adição de novas réplicas, utilizamos o algoritmo de exclusão mútua de Lamport~\cite{lamport-logical-clocks} para gerenciar o acesso à \textbf{vision}.
 
 Argumentamos que a mudança, como apresentada na seção \ref{sec:model}, feita no modelo para o sistema - não é possível, inicialmente, que todos os processos se comuniquem, mas, ao invés disso, clientes fazem requisições às réplicas de maneira disjunta - mantém sua corretude: quando um processo $A$ deseja se tornar uma réplica, $A$ é um cliente fazendo uma requisição ao servidor através da réplica $B$.
 Como as requisições para uma mesma réplica são feitas de maneira disjunta, podemos dizer que, no pior caso, cada réplica recebe uma requisição simultânea de um processo que deseja se tornar réplica.
@@ -66,6 +66,15 @@ Caso sim, o recurso é liberado e a requisição para criação do usuário é n
 
 \subsection{Localização de recursos}
 
+Como visto na seção anterior, a instância de \textit{Session} é criada na réplica para qual foi feita essa requisição.
+Os recursos não são movidos entre réplicas, o que significa que ficam na réplica onde foram criadas até o desligamento do sistema.
+Isso é um padrão observado através do sistema: recursos são criados nas réplicas que atendem as requisições.
+
+Uma requisição pode aparentar ser atendida por uma réplica, mas na realidade estar sendo atendida por outra quando a réplica que aparenta ter atendido a requisição possuir apenas uma referência remota ao recurso necessário para o atendimento da requisição.
+Nesse caso, a requisição é automaticamente repassada a réplica que possui o recurso, através de invocações remotas dos métodos do recurso.
+
 \subsection{Outros recursos}
+
+Outros recursos, como conversas e mensagens, não tiveram suas implementações afetadas pela distribuição do servidor em réplicas porque podem ser resolvidos de maneira centralizada pela réplica responsável por sua criação, utilizando o redirecionamento de requisições explicado na seção anterior para receber todas as requisições adequadas.
 
 \end{document}
