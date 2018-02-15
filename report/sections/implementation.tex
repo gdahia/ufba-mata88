@@ -4,97 +4,68 @@
 
 \subsection{Linguagem Java}
 
-O sistema foi implementado em linguagem Java, pois esta era, dentre as analisadas, a única sobre a qual todos os integrantes do grupo tinham domínio prévio suficiente, e que também possui integração e suporte nativo a ferramentas dedicadas a construção de sistemas distribuídos.
-
-Dentre as ferramentas nativas de Java, a mais importante para o projeto foi Java RMI, pois permitiu que o sistema fosse implementado sem que fosse necessário se preocupar com gerenciamento de memória dentre os processos e, excetuando a inicialização requerida pelo sistema, a declaração de heranças e implementações relativas ao comportamento remoto das classes e o tratamento de exceções, as chamadas pudessem ser feitas como seriam localmente, ignorando na maior parte do tempo preocupações com problemas como \textit{marshalling} e \textit{unmarshalling}, por exemplo.
-A importância de Java RMI é tal que dois processos que se comunicam diretamente só o fazem através de invocações remotas de métodos.
-
-Além de Java RMI, a simplicidade para o tratamento de ações concorrentes em Java, também uma funcionalidade nativa da linguagem, tornou a implementação do trabalho muito mais fácil do que seria em alguma outra linguagem não tão apta a tarefa.
+Além das considerações apresentadas anteriormente para escolha da linguagem de programação, a simplicidade para o tratamento de ações concorrentes em Java, também uma funcionalidade nativa da linguagem, tornou a implementação do trabalho muito mais fácil do que seria em alguma outra linguagem não tão apta a tarefa.
 A versão anterior do projeto utilizava mecanismos de Java para o tratamento de concorrência (o uso da classe \textit{Vector} ao invés da mais comumente utilizada \textit{ArrayList}, por exemplo) que são pouco recomendados pela comunidade por falhas.
-Isso foi corrigido com utilização de métodos \textit{synchronized} nos locais apropriados e problemas de concorrência não devem mais ser observados.
+Isso foi corrigido com utilização de métodos \textit{synchronized} nos locais apropriados e problemas de concorrência devidos a má utilização dos recursos de Java não devem mais ser observados.
+
+\subsection{Criando réplicas} \label{subsec:replicas}
+
+Uma réplica, neste sistema, deve implementar a interface remota \textit{Server} - a única implementação fornecida é a classe \textit{ServerImpl}.
+
+Para criar a primeira réplica, deve ser feita uma invocação da aplicação do servidor fornecendo o endereço IP (com o comando \textit{java ServerApp [endereço IP]}) no qual esta réplica deverá esperar para receber conexões.
+Caso essa seja a única réplica criada, o sistema deverá se comportar exatamente quando o servidor era implementado de maneira centralizada.
+
+Para criar uma réplica associada a um servidor previamente existente, deve ser feita invocação similar, fornecendo dois endereços IP: o endereço no qual esta réplica deverá esperar para receber comunicações (IP1) e o endereço para uma das réplicas do servidor ao qual se deseja integrar a nova réplica (IP2), com o comando \textit{java ServerApp [IP1] [IP2]}.
+
+O funcionamento do sistema é baseado no conceito de comunicação em grupo.
+Assim, o grupo precisa ter uma vision consistente de quais processos o integram.
+Em outras palavras, o servidor precisa saber todas as réplicas que o compõem.
+Isso é feito mantendo, em cada uma das réplicas, um \textit{ArrayList} de referências remotas para \textit{Server}s chamado \textit{replicas}.
+Uma réplica é parte de um servidor exatamente quando há uma referência para si em \textit{replicas} de alguma outra réplica do servidor.
+Como a vision do servidor é consistente entre réplicas, isso equivale a dizer que há referências para si em \textit{replicas} de todas as outras réplicas.
+Se fóssemos modelar como um grafo a relação $R$, onde $aRb$ sse ``há referência de $a$ em \textit{replicas} de $b$'', teríamos um grafo direcionado completo sem laços.
+
+Para fazer com que as réplicas concordem na vision do servidor, tratamos \textit{replicas} através das réplicas como um único recurso a ser compartilhado pelas réplicas, o qual chamamos \textbf{vision}.
+Para garantir que a vision do servidor permaneça consistente mesmo com a adição de novas réplicas, utilizamos o algoritmo de exclusão mútua de Lamport \textit{et al.}~\cite{lamport-logical-clocks} para gerenciar o acesso à \textbf{vision}.
+
+Argumentamos que a mudança, como apresentada na seção \ref{sec:model}, feita no modelo para o sistema - não é possível, inicialmente, que todos os processos se comuniquem, mas, ao invés disso, clientes fazem requisições às réplicas de maneira disjunta - mantém sua corretude: quando um processo $A$ deseja se tornar uma réplica, $A$ é um cliente fazendo uma requisição ao servidor através da réplica $B$.
+Como as requisições para uma mesma réplica são feitas de maneira disjunta, podemos dizer que, no pior caso, cada réplica recebe uma requisição simultânea de um processo que deseja se tornar réplica.
+Logo, os únicos processos que competem por \textbf{vision} são as réplicas do servidor, efetivamente fazendo com que todos os processos que competiram pelo recurso nesse momento sejam comunicáveis e reestabelecendo a corretude do algoritmo de exclusão mútua.
+Uma réplica adicionada posteriormente precisará, para ter garantido acesso a \textbf{vision}, que receber mensagens posteriores de todas as outras réplicas; réplicas que já tivessem feito requisições de acesso a \textbf{vision} não serão afetadas pela entrada da nova réplica e suas futuras requisições necessariamente precisarão levar em conta a presença da nova réplica, cuja existência é agora conhecida por todos.
+
+Mais detalhadamente, quando $A$ requer a $B$ sua entrada como réplica do servidor do qual $B$ faz parte, $B$ faz uma requisição, usando o protocolo do algoritmo de exclusão mútua, para ganhar acesso a \textbf{vision}.
+Quando é garantido o acesso de $B$ a \textbf{vision}, $B$ faz com que cada outra réplica $C$ coloque uma referência a $A$ em seu respectiva \textit{replicas} e com que $A$ coloque uma referência a $C$ em seu \textit{replicas}.
+Por fim, $B$ coloca uma referência a $A$ em seu \textit{replicas} e vice-versa, e $B$ libera \textbf{vision}.
+Com isso, $A$ se torna uma réplica do servidor, pois em todas as outras réplicas há uma referência a $A$ e vice-versa.
 
 \subsection{Conexão entre clientes e servidor}
 
-Um servidor para o sistema de troca de mensagens desta implementação deve implementar a interface remota \textit{Server}.
-A única implementação fornecida é a classe \textit{ServerImpl}, a principal classe do lado do servidor da aplicação.
 É através da obtenção de uma referência a um objeto remoto que implementa a interface \textit{Server} (na prática, uma instância de \textit{ServerImpl}) que se dá a comunicação entre clientes e servidor.
-A aplicação do servidor, implementada na classe \textit{ServerApp}, instancia um objeto da classe \textit{ServerImpl}, o exporta e faz o \textit{bind} no registro.
-A invocação da aplicação do servidor deve fornecer o endereço IP (com o comando \textit{java ServerApp [endereço IP]}) ao qual clientes deverão se conectar; caso contrário, é assumido que se trata de \textit{localhost}.
 
-A aplicação do cliente, implementada na classe \textit{ClientApp}, é responsável por obter a referência ao objeto remoto que implementa o servidor, dado o endereço IP como argumento da invocação, e instanciar a classe \textit{Client}, responsável pela interação com o usuário, com a instância obtida como argumento.
+A aplicação do cliente, implementada na classe \textit{ClientApp}, é responsável por obter a referência remota a uma réplica, dado o endereço IP como argumento da invocação, e instanciar a classe \textit{Client}, responsável pela interação com o usuário, com a instância obtida como argumento.
 
-\subsection{Interação com o usuário}
+Qualquer réplica de um servidor pode ser conectada ao cliente.
+A escolha de uma réplica determina que alguns recursos criados pelo cliente serão armazenados nessa réplica, mas, como visto posteriormente, não necessariamente.
 
-A interação com o usuário se dá através de um menu textual impresso na linha de comando de um terminal.
-Não há interface gráfica.
-Os comandos podem ser de dois tipos: ou correspondem a numeração especificada em algum menu ou a comandos similares aos utilizados em editores de texto modais, como \textit{vi}.
+\subsection{Registro de cadastros de usuários}
 
-Os menus são implementados nas classes de sufixo \textit{Menu} e na classe \textit{Client}.
-Existe interação mínima com o usuário também nas classes com sufixo \textit{Handler}.
+Os métodos \textit{addUser} e \textit{removeUser}, utilizados nesta versão e na anterior para, respectivamente, tentar de criar de um novo cadastro de usuário e deletar um cadastro de usuário, agora precisam deixar o registro de cadastros consistente entre as réplicas.
+A abordagem utilizada é similar a gerência das réplicas do sistema, como visto na subseção \ref{subsec:replicas}.
 
-\subsection{Cadastro de usuários} \label{subsec:signup}
+Toda vez que um método (\textit{addUser}, \textit{removeUser}, \textit{getSession} ou \textit{addUserToChat}) que deseja acessar \textbf{sessions}, o registro de cadastro de usuários (um recurso compartilhado entre réplicas, assim como \textbf{vision}), é invocado, a réplica da invocação faz uma requisição para acessar não \textbf{sessions} propriamente, mas \textbf{vision}.
 
-Para se cadastrar no sistema, um novo usuário deve selecionar a opção \textit{Sign up} no menu principal.
-Isso ocasiona a instanciação de um objeto da classe \textit{SessionHandler}, com argumento a referência ao servidor, cujo construtor é responsável por obter o nome que o usuário deseja utilizar no sistema e suas credenciais.
-Em seguida, a invocação do método \textit{signUp} da classe \textit{SessionHandler} faz com que o nome de usuário escolhido e as credenciais (ambas classes serializáveis) sejam enviadas ao servidor através de uma invocação remota do método \textit{addUser}.
-Este método verifica a disponibilidade do nome de usuário requisitado -- nomes de usuário são identificadores únicos para usuários e, portanto, não podem se repetir no servidor -- e, caso esteja livre, salva as credenciais do usuário associando-as a seu nome, além da instanciação de uma sessão de usuário da classe \textit{SessionImpl}, implementação da interface \textit{Session}.
-O usuário é informado com uma mensagem, na saída padrão, do sucesso ou não de sua requisição.
+Não há problema em fazer essa requisição, pois as condições estabelecidas em \ref{sec:model} garantem que no momento em que o primeiro cliente fizer uma requisição, não haverá mais alteração em \textbf{vision}.
+Usando o mesmo raciocínio visto em \ref{subsec:replicas}, vemos que as réplicas competem por \textbf{sessions} (indiretamente, ao competir por \textbf{vision}) podem se comunicar umas com as outras e as condições para o funcionamento do algoritmo de exclusão mútua são atendidas.
 
-\subsection{Login}
+Assim, os métodos que leem ou modificam \textbf{sessions} primeiro pedem acesso ao recurso, fazem as operações desejadas no registro e depois o libera, garantindo a consistência do registro de cadastro de usuários.
 
-Para efetuar o login no sistem, o usuário deve selecionar a opção \textit{Sign in} no menu principal.
-Isso ocasiona a instanciação de um objeto da classe \textit{SessionHandler}, análogo à vista na seção \ref{subsec:signup}.
-Feito isso, o servidor irá verificar a autenticidade das credenciais fornecidas utilizando as credenciais armazenadas anteriormente e, assim, a identidade do usuário.
-Caso se comprove sua autenticidade, o usuário será recebido com uma mensagem de boas vindas e será redirecionado para o menu de sessão.
-A nível de implementação, o login bem-sucedido termina com o servidor enviando ao cliente uma referência ao objeto remoto \textit{Session} correspondente à sessão do usuário agora logado.
-Esta referência é argumento na instanciação da classe \textit{SessionMenu}, responsável pela gerência da sessão do usuário pelo processo cliente.
-Caso o usuário não seja quem ele diz ser ou o nome de usuário fornecido não esteja associado a um usuário cadastrado, ele será notificado com uma mensagem de erro.
+Por exemplo, para criar um novo usuário, a réplica ao qual foi feita a requisição pede acesso a \textbf{vision}.
+Quando lhe é garantido acesso a \textbf{vision}, sabemos que é a única réplica atualmente com acesso (por causa da corretude do algoritmo de exclusão mútua), e por isso podemos prosseguir sem nos preocuparmos com efeitos de concorrência.
+É feita uma consulta se o nome de usuário requerido já está no cadastro.
+Caso sim, o recurso é liberado e a requisição para criação do usuário é negada; caso contrário, o usuário é criado, uma referência remota a \textit{Session} correspondente, juntamente com as credenciais do usuário, são passadas a todas as outras réplicas, e o recurso é liberado.
 
-\subsection{Iniciando uma nova conversa}
+\subsection{Localização de recursos}
 
-Para criar novas conversas, o usuário deve selecionar a opção \textit{New Chat} no menu de sessão.
-Conversas são sempre iniciadas apenas com o usuário que a criou, mas a composição de seus membros pode ser modificada com a adição de novos membros pelos membros que pertenciam a conversa ou com a saída de membros antigos.
-Conversas vazias são automaticamente removidas pelo coletor de lixo do JVM, já que não possuem referências apontando para si.
-No momento de sua criação, conversas recebem um tópico genérico, que pode posteriormente ser modificado.
-
-É interessante pensar em conversas como implementações de sistemas do tipo \textit{Publish/Subscribe}: a diretiva \textit{subscribe} corresponde a entrada de um usuário em uma conversa, o ato de \textit{unsubscribe} de um processo corresponde a saída de um usuário de uma conversa, e o envio de uma mensagem para os membros da conversa seria equivalente a \textit{publish}.
-Nesta visão, cada sessão de usuário seria um processo, ao invés de cada computador conectado ao servidor.
-É importante notar que esses números nem sempre correspondem um-a-um: não há impedimento para que um usuário faça login em mais de um computador ao mesmo tempo.
-Esta análise captura a essência da comunicação indireta desacoplada do tempo que ocorre entre os usuários quando estes se comunicam não necessariamente online ao mesmo tempo.
-
-Uma vez selecionada a opção de criar uma nova conversa no menu, a sessão de usuário manda uma requisição para o servidor, que caso suceda, irá instanciar um objeto da classe \textit{ChatImpl}, passando como argumentos uma referência ao servidor e o nome do usuário que criou o chat.
-A classe \textit{ChatImpl} implementa a interface \textit{Chat}, correspondente a uma sessão de conversa, análogo ao papel da interface \textit{Session} em relação a sessão de usuário.
-Esta classe também é responsável por armazenar as mensagens trocadas na conversa em um \textit{ArrayList}.
-Em seguida, essa instância é adicionada ao vetor de conversas da sessão que fez a requisição.
-Caso contrário, será exibida uma mensagem de erro.
-
-\subsection{Trocando mensagens}
-
-Caso o usuário faça parte de alguma conversa, o menu de sua sessão a exibirá antes das opções disponíveis para usuários que não participam de conversas.
-Selecionar a opção correspondente a uma conversa ocasiona a instanciação de duas classes: \textit{ChatHandler} e \textit{ChatMenu}.
-\textit{ChatMenu} trata da interação com o usuário, enquanto \textit{ChatHandler} executa as requisições feitas pelo cliente, se utilizando de invocações remotas de uma instância de \textit{Chat}.
-
-O exemplo mais claro e importante da interação entre \textit{ChatHandler} e \textit{Chat} se dá no envio de mensagens para a conversa.
-Uma vez escolhida a opção de enviar uma mensagem no menu de conversa, \textit{ChatHandler} obtém do usuário, através da entrada padrão, o conteúdo da mensagem que ele deseja enviar.
-Em seguida, é instanciado um objeto da classe \textit{Message} com o texto da mensagem e seu autor.
-Esse objeto é enviado para a conversa através da invocação remota do método \textit{sendMessage} da interface \textit{Chat}.
-
-A visualização das mensagens trocadas na conversa até agora é feita através de navegação.
-A classe \textit{ChatMenu} mantém um atributo chamado \textit{messageIndex}, responsável por indicar qual mensagem deve ser vista em relação a mensagem mais recentemente recebida na conversa.
-Não há necessidade de preocupação com a ordenação das mensagens, pois o servidor é centralizado e todas as mensagens são guardadas em um único \textit{ArrayList} em \textit{ChatImpl}, \textit{messages}.
-`j' avança para a mensagem mais recente (decrementando \textit{messageIndex}), caso haja, e `k' retrocede para a mensagem menos recente; `q' retorna para o menu da conversa.
-
-\subsection{Deletando um cadastro}
-
-O usuário pode a qualquer momento deletar seu próprio cadastro.
-Para fazer isso, ele deve selecionar a opção \textit{Delete account} no menu de sessão.
-Uma vez feito isso, será exibida uma pergunta para confirmar que o usuário deseja realmente deletar sua conta, já que isso implicaria sair de todas as conversas que o usuário participa e é um procedimento irreversível.
-Caso a primeira letra digitada pelo usuário seja `y', a sua conta será deletada permanentemente.
-Caso contrário o usuário será redirecionado para o menu de sessão novamente.
-
-Uma vez que o usuário seleciona a deleção de sua conta e confirma, a sessão irá chamar o método \textit{delete} que irá chamar o método \textit{removeUser} na instância do servidor que está sendo usada por aquele usuário e que recebe como argumento o nome de usuário.
-O servidor irá então remover a sessão e a credencial do usuário de suas respectivas \textit{HashMap}s e ao retornar, a função \textit{delete} irá remover o usuário de todas as conversas das quais ele participava.
-Feito isso o usuário irá receber uma mensagem garantindo que sua conta foi deletada, e será redirecionado para o menu principal da aplicação do cliente.
+\subsection{Outros recursos}
 
 \end{document}
-
