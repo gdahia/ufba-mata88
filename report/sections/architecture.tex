@@ -2,28 +2,37 @@
  
 \begin{document}
 
-O sistema foi implementado de forma que apenas um processo, aquele que executa a aplicação do servidor, desempenha o papel de servidor, de maneira centralizada, e todos os outros processos, os que rodam aplicações de clientes, são clientes.
+O sistema foi implementado de forma que o servidor seja distribuído; todos os processos que executam a aplicação do servidor são ditos réplicas e desempenham coletivamente o papel de servidor.
+Recursos estão localizados em exatamente uma das réplicas e cada réplica sabe em qual réplica está localizado um determinado recurso.
+Todos os outros processos, os que rodam aplicações de clientes, são clientes.
+
+\subsection{Comunicação}
+
 A comunicação entre processos se dá exclusivamente através de troca de mensagens e pode ocorrer mesmo que eles estejam em computadores diferentes.
-Ela ocorre, entretanto, sempre entre algum cliente e o servidor: não há comunicação direta entre clientes.
+Ela ocorre, entretanto, sempre entre algum cliente e uma réplica ou entre réplicas: não há comunicação direta entre clientes.
 
-Não há atualmente no projeto mecanismos específicos para lidar com sua escalabilidade.
-Logo, ela depende tanto da capacidade computacional proporcionada ao servidor e da rede sobre a qual sistema será executado, como das funcionalidades oferecidas pela implementação.
+\subsection{Escalabilidade}
 
-Os testes realizados com intuito de avaliar a escalabilidade do sistema foram modestos.
-Em todos, o sistema funcionou como esperado, mas o maior deles foi a criação de mais de cinco processos clientes em computadores diferentes simultaneamente.
+O sistema lida com escalabilidade através do número de réplicas disponíveis.
+Cada réplica lida apenas com as computações relacionadas à manutenção da consistência do servidor, à distribuição das requisições para as réplicas apropriadas e às requisições relacionadas a recursos criados localmente (chamadas a partir de agora de requisições locais).
 
-A persistência do sistema é inteiramente dependente da persistência do servidor.
+Como as computações relativas à manutenção da consistência são proporcionais apenas ao número de réplicas e a distribuição de requisições é uma tarefa simples, a exigência maior de processamento ocorre pelo atendimento de requisições locais.
+Assim, se todos os clientes fizerem requisições a uma única réplica, o sistema se comporta como se possuíse um servidor centralizado e voltamos a situação do projeto anterior.
+
+Essa situação pode ser prevenida da seguinte maneira: ao receber uma requisição para criação de algum recurso, ao invés de atender a requisição, a réplica sorteia com probabilidade uniforme uma das réplicas e delega a ela, obrigatoriamente, a criação e gerenciamento do recurso.
+Dessa forma, réplicas teriam em média o mesmo número de recursos e, supondo que o número de requisições locais cresça com o número de recursos gerenciados, dividiriam igualmente o processamento das requisições.
+Esse mecanismo não foi implementado, contudo.
+
+\subsection{Persistência}
+
+A persistência do sistema é inteiramente dependente da persistência das réplicas, como estabelecido na seção \ref{sec:model}.
 Por exemplo, caso o cliente falhe, sua sessão pode ser recuperada através do reinício da aplicação do cliente.
-Contudo, caso a aplicação do servidor falhe ou sua invocação seja terminada, todos os dados serão perdidos, já que o sistema é centralizado, não há tratamento de falhas e a persistência do servidor entre invocações não foi implementada.
-Logo, o sistema é tão persistente quanto uma invocação do servidor.
+Contudo, caso qualquer réplica falhe ou tenha sua invocação terminada, todos os recursos nela armazenados serão perdidos, e é possível que fiquem bloqueadas a criação de outros recursos em outras réplicas, pois não há mecanismo de detecção de falhas - uma réplica pode entrar em \textit{starvation} aguardando a permissão da réplica que falhou para modificar a visão do sistema.
 
-\textit{Openness} foi um aspecto amplamente considerado durante a implementação do sistema, com decisões que visavam diminuir o acoplamento, aumentar a coesão e, ao mesmo tempo, a modularização de seus componentes, favorecendo a possibilidade de sua extensão ou reimplementação de porções, em detrimento de soluções mais simples.
+\subsection{Transparência}
 
 A organização do sistema está feita em arquitetura \textit{two-tier}, garantindo parte da transparência do sistema, visto que, dessa forma, o usuário só conhece a aplicação do cliente e interfaces públicas para interação com o servidor.
 Além disso, o acesso ao sistema é majoritariamente transparente: apenas sua inicialização, suas falhas remotas e sua reconfiguração são visíveis ao usuário.
-O sistema suporta ainda que o acesso não garanta o conhecimento das localizações físicas dos seus recursos e que usuários possam acessar suas contas de múltiplas localidades simultaneamente sem que seus pares saibam.
-
-Devido a escolhas de implementação, não há suporte a heterogeneidade no sistema.
-Ele pode, contudo, ser executado simultaneamente em diversas plataformas, apesar de não terem sidos realizados testes a esse respeito.
+O sistema suporta ainda que o acesso não garanta o conhecimento das localizações físicas dos seus recursos, nem em qual réplica o recurso está localizado, e que usuários possam acessar suas contas de múltiplas localidades simultaneamente sem que seus pares saibam.
 
 \end{document}
