@@ -18,15 +18,15 @@ Caso essa seja a única réplica criada, o sistema deverá se comportar exatamen
 Para criar uma réplica associada a um servidor previamente existente, deve ser feita invocação similar, fornecendo dois endereços IP: o endereço no qual esta réplica deverá esperar para receber comunicações (IP1) e o endereço para uma das réplicas do servidor ao qual se deseja integrar a nova réplica (IP2), com o comando \textit{java ServerApp [IP1] [IP2]}.
 
 O funcionamento do sistema é baseado no conceito de comunicação em grupo.
-Assim, o grupo precisa ter uma vision consistente de quais processos o integram.
+Assim, o grupo precisa ter uma visão consistente de quais processos o integram.
 Em outras palavras, o servidor precisa saber todas as réplicas que o compõem.
 Isso é feito mantendo, em cada uma das réplicas, um \textit{ArrayList} de referências remotas para \textit{Server}s chamado \textit{replicas}.
 Uma réplica é parte de um servidor exatamente quando há uma referência para si em \textit{replicas} de alguma outra réplica do servidor.
-Como a vision do servidor é consistente entre réplicas, isso equivale a dizer que há referências para si em \textit{replicas} de todas as outras réplicas.
+Como a visão do servidor é consistente entre réplicas, isso equivale a dizer que há referências para si em \textit{replicas} de todas as outras réplicas.
 Se fóssemos modelar como um grafo a relação $R$, onde $aRb$ sse ``há referência de $a$ em \textit{replicas} de $b$'', teríamos um grafo direcionado completo sem laços.
 
-Para fazer com que as réplicas concordem na vision do servidor, tratamos \textit{replicas} através das réplicas como um único recurso a ser compartilhado pelas réplicas, o qual chamamos \textbf{vision}.
-Para garantir que a vision do servidor permaneça consistente mesmo com a adição de novas réplicas, utilizamos o algoritmo de exclusão mútua de Lamport \textit{et al.}~\cite{lamport-logical-clocks} para gerenciar o acesso à \textbf{vision}.
+Para fazer com que as réplicas concordem na visão do servidor, tratamos \textit{replicas} através das réplicas como um único recurso a ser compartilhado pelas réplicas, o qual chamamos \textbf{vision}.
+Para garantir que a visão do servidor permaneça consistente mesmo com a adição de novas réplicas, utilizamos o algoritmo de exclusão mútua de Lamport \textit{et al.}~\cite{lamport-logical-clocks} para gerenciar o acesso à \textbf{vision}.
 
 Argumentamos que a mudança, como apresentada na seção \ref{sec:model}, feita no modelo para o sistema - não é possível, inicialmente, que todos os processos se comuniquem, mas, ao invés disso, clientes fazem requisições às réplicas de maneira disjunta - mantém sua corretude: quando um processo $A$ deseja se tornar uma réplica, $A$ é um cliente fazendo uma requisição ao servidor através da réplica $B$.
 Como as requisições para uma mesma réplica são feitas de maneira disjunta, podemos dizer que, no pior caso, cada réplica recebe uma requisição simultânea de um processo que deseja se tornar réplica.
@@ -49,7 +49,7 @@ A escolha de uma réplica determina que alguns recursos criados pelo cliente ser
 
 \subsection{Registro de cadastros de usuários}
 
-Os métodos \textit{addUser} e \textit{removeUser}, utilizados nesta versão e na anterior para, respectivamente, tentar de criar de um novo cadastro de usuário e deletar um cadastro de usuário, agora precisam deixar o registro de cadastros consistente entre as réplicas.
+Os métodos \textit{addUser} e \textit{removeUser}, utilizados nesta versão e na anterior para, respectivamente, tentar criar um novo cadastro de usuário e deletar um cadastro de usuário, agora precisam deixar o registro de cadastros consistente entre as réplicas.
 A abordagem utilizada é similar a gerência das réplicas do sistema, como visto na subseção \ref{subsec:replicas}.
 
 Toda vez que um método (\textit{addUser}, \textit{removeUser}, \textit{getSession} ou \textit{addUserToChat}) que deseja acessar \textbf{sessions}, o registro de cadastro de usuários (um recurso compartilhado entre réplicas, assim como \textbf{vision}), é invocado, a réplica da invocação faz uma requisição para acessar não \textbf{sessions} propriamente, mas \textbf{vision}.
