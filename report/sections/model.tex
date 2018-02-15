@@ -1,0 +1,31 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+Para que o sistema funcione adequadamente, é necessário que se observem as condições a seguir:
+
+\begin{enumerate}
+  \item
+    para quaisquer dois processos $p$ e $q$, as mensagens enviadas de $p$ para $q$ são recebidas na mesma ordem em que são enviadas;
+
+  \item
+    toda mensagem enviada é eventualmente recebida;
+
+  \item \label{item:sim-req}
+    cada réplica do servidor recebe apenas uma requisição de cliente por vez;
+
+  \item
+    não ocorrem \textit{crashes}.
+\end{enumerate}
+
+As duas primeiras condições são as listadas por Lamport \textit{et al.}~\cite{lamport-logical-clocks} para o funcionamento de seu algoritmo de exclusão mútua baseado em relógios lógicos.
+A condição \ref{item:sim-req} conduz à observação da terceira condição listada naquele artigo de maneira indireta, como será visto em seção posterior.
+
+Apesar de parecer uma exigência irrazoável, a condição \ref{item:sim-req} pode ser garantida com uma pequena modificação na implementação do sistema.
+Quando um cliente faz uma requisição, ao invés de a réplica ao qual ela foi direcionada imediatamente tentar atendê-la, ela é colocada em uma fila e o cliente bloqueia esperando que seja atendida.
+Uma \textit{thread} serve as requisições da fila, na ordem em que foram recebidas, ao mecanismo antigo de atendimento de requisições da réplica, efetivamente fazendo com que cada réplica receba apenas uma requisição de cliente por vez, mas não impedindo diferentes clientes de fazer requisições simultaneamente.
+
+O motivo pelo qual essa explicação foi fornecida é que, na versão atual do sistema, esse mecanismo não está implementado.
+A terminologia utilizada e a razão para o qual essas condições precisam ser observadas no sistema ficarão mais claras com a leitura das seções subsequentes.
+
+\end{document}
