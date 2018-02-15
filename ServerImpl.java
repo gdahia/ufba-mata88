@@ -9,18 +9,18 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
   private HashMap<String, String> credentials;
   private HashMap<String, Session> sessions;
   private ArrayList<Server> replicas;
-  private HashMap<String, Integer> replicasRequests;
-  private HashMap<String, Integer> replicasMessages;
-  private Integer replicasClock;
+  private HashMap<String, Integer> visionRequests;
+  private HashMap<String, Integer> visionMessages;
+  private Integer clock;
 
   public ServerImpl() throws RemoteException {
     hostname = System.getProperty("java.rmi.server.hostname");
     credentials = new HashMap<String, String>();
     sessions = new HashMap<String, Session>();
     replicas = new ArrayList<Server>();
-    replicasRequests = new HashMap<String, Integer>();
-    replicasMessages = new HashMap<String, Integer>();
-    replicasClock = 0;
+    visionRequests = new HashMap<String, Integer>();
+    visionMessages = new HashMap<String, Integer>();
+    clock = 0;
   }
 
   public String getHostname() {
@@ -37,91 +37,91 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
   }
 
-  public synchronized int registerReplicasRequest(String claimant, int timestamp) {
+  public synchronized int registerVisionRequest(String claimant, int timestamp) {
     // register request
-    replicasRequests.put(claimant, timestamp);
+    visionRequests.put(claimant, timestamp);
 
     // register message timestamp
-    replicasMessages.put(claimant, timestamp);
+    visionMessages.put(claimant, timestamp);
 
     // update replicas clock
-    if (timestamp >= replicasClock)
-      replicasClock = timestamp + 1;
+    if (timestamp >= clock)
+      clock = timestamp + 1;
 
-    return replicasClock;
+    return clock;
   }
 
-  public void requestReplicas() {
-    int timestamp = replicasClock;
+  public void requestVision() {
+    int timestamp = clock;
 
     // send request message to replicas
     for (Server replica : replicas) {
       try {
-        int ack = replica.registerReplicasRequest(hostname, timestamp);
+        int ack = replica.registerVisionRequest(hostname, timestamp);
 
         // register ack timestamp
-        replicasMessages.put(replica.getHostname(), ack);
+        visionMessages.put(replica.getHostname(), ack);
 
         // update replicas clock
-        synchronized (replicasClock) {
-          if (ack >= replicasClock)
-            replicasClock = ack + 1;
+        synchronized (clock) {
+          if (ack >= clock)
+            clock = ack + 1;
           else
-            replicasClock++;
+            clock++;
         }
 
       } catch (Exception e) {
-        System.err.println("ServerImpl, requestReplicas: " + e.toString());
+        System.err.println("ServerImpl, requestVision: " + e.toString());
       }
     }
 
     // send request to itself
-    registerReplicasRequest(hostname, timestamp);
+    registerVisionRequest(hostname, timestamp);
   }
 
-  public synchronized void registerReplicasRelease(String claimant, int timestamp) {
+  public synchronized void registerVisionRelease(String claimant, int timestamp) {
     // remove claimants requests
-    replicasRequests.remove(claimant);
+    visionRequests.remove(claimant);
 
     // register message timestamp
-    replicasMessages.put(claimant, timestamp);
+    visionMessages.put(claimant, timestamp);
 
     // update replicas clock
-    if (timestamp >= replicasClock)
-      replicasClock = timestamp + 1;
+    if (timestamp >= clock)
+      clock = timestamp + 1;
   }
 
-  public void releaseReplicas() {
-    int timestamp = replicasClock;
+  public void releaseVision() {
+    int timestamp = clock;
 
     // remove own request messages
-    registerReplicasRelease(hostname, timestamp);
+    registerVisionRelease(hostname, timestamp);
 
     // update replicas clock
-    synchronized (replicasClock) {
-      replicasClock++;
+    synchronized (clock) {
+      clock++;
     }
 
     // send release message to replicas
     for (Server replica : replicas) {
       try {
-        replica.registerReplicasRelease(hostname, timestamp);
+        replica.registerVisionRelease(hostname, timestamp);
 
         // update replicas clock
-        synchronized (replicasClock) {
-          replicasClock++;
+        synchronized (clock) {
+          clock++;
         }
       } catch (Exception e) {
-        System.err.println("ServerImpl, releaseReplicas: " + e.toString());
+        System.err.println("ServerImpl, releaseVision: " + e.toString());
       }
     }
   }
 
-  public boolean replicasGranted() {
-    int timestamp = replicasRequests.get(hostname);
+  public boolean visionGranted() {
+    int timestamp = visionRequests.get(hostname);
 
     // check condition (i)
-    for (Map.Entry<String, Integer> entry : replicasRequests.entrySet()) {
+    for (Map.Entry<String, Integer> entry : visionRequests.entrySet()) {
       int replicaTimestamp = entry.getValue();
       String replicaHostname = entry.getKey();
 
@@ -131,7 +131,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
 
     // check condition (ii)
-    for (Map.Entry<String, Integer> entry : replicasMessages.entrySet()) {
+    for (Map.Entry<String, Integer> entry : visionMessages.entrySet()) {
       int replicaTimestamp = entry.getValue();
       String replicaHostname = entry.getKey();
 
@@ -144,8 +144,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
 
   public void connectNewReplica(Server newReplica) {
     // wait until access to replicas is granted
-    requestReplicas();
-    while (!replicasGranted()) {
+    requestVision();
+    while (!visionGranted()) {
     }
 
     // connect to every other replica
@@ -166,7 +166,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
       System.err.println("ServerImpl, connectNewReplica exception (2): " + e.toString());
     }
 
-    releaseReplicas();
+    releaseVision();
   }
 
   public void addReplica(Server server) {
