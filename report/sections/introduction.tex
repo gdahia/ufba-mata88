@@ -2,12 +2,13 @@
  
 \begin{document}
 
-Este documento descreve a implementação de um sistema de envio de mensagens feita como primeiro trabalho prático para a disciplina MATA88 - Fundamentos de Sistemas Distribuídos da Universidade Federal da Bahia.
+Este documento descreve as modificações para tornar distribuído o servidor de um sistema de envio de mensagens, além de apontar os efeitos relevantes das mudanças no funcionamento do sistema.
+O sistema resultante dessas modificações corresponde ao segundo trabalho prático para a disciplina MATA88 - Fundamentos de Sistemas Distribuídos da Universidade Federal da Bahia.
 
-Foi considerado que qualquer funcionalidade que não estivesse na especificação do trabalho seria uma funcionalidade adicional.
-Mesmo assim, decidimos que apenas as de maior relevância ou relação com o conteúdo da disciplina seriam abordadas na seção designada a esse fim.
-Dessa forma, acreditamos que o estado apresentado do sistema reflete, através de seu escopo e das funcionalidades adicionais apresentadas, o tamanho da equipe e o envolvimento dos membros.
+Apesar de ser uma modificação do sistema anterior, a funcionalidade de criptografia, presente anteriormente, não está mais disponível.
+Essa decisão foi tomada porque o código era demasiado complexo para ser modificado e nem todos os integrantes do grupo compreendiam em sua inteireza os detalhes da implementação, o que dificultaria o progresso do trabalho consideravelmente.
+As outras funcionalidades listadas na versão anterior desse documento foram mantidas.
 
-O conteúdo do documento é dividido da seguinte maneira: a seção \ref{sec:arc} descreve a arquitetura do sistema, a seção \ref{sec:impl} descreve as principais decisões do projeto em termos de implementação, e a seção \ref{sec:feat} descreve as funcionalidades adicionais do sistema.
+O conteúdo do documento é dividido da seguinte maneira: a seção \ref{sec:model} descrve as suposições sobre o funcionamento do sistema com um modelo, a seção \ref{sec:arc} descreve a arquitetura do sistema, a seção \ref{sec:impl} descreve as principais decisões do projeto em termos de implementação, e a seção \ref{sec:feat} descreve os aspectos adicionais do sistema.
 
 \end{document}
