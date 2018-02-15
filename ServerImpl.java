@@ -48,6 +48,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     if (timestamp >= clock)
       clock = timestamp + 1;
 
+    clock++;
+
     return clock;
   }
 
@@ -66,8 +68,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         synchronized (clock) {
           if (ack >= clock)
             clock = ack + 1;
-          else
-            clock++;
+
+          clock++;
         }
 
       } catch (Exception e) {
