@@ -65,7 +65,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         // update replicas clock
         synchronized (replicasClock) {
           if (ack >= replicasClock)
-            replicasClock = timestamp + 1;
+            replicasClock = ack + 1;
           else
             replicasClock++;
         }
@@ -145,8 +145,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
   public void connectNewReplica(Server newReplica) {
     // wait until access to replicas is granted
     requestReplicas();
-    while (!replicasGranted())
-      ;
+    while (!replicasGranted()) {
+    }
 
     // connect to every other replica
     for (Server replica : replicas) {
