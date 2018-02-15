@@ -143,7 +143,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
   }
 
   public void connectNewReplica(Server newReplica) {
-    // wait until access to replicas is granted
+    // wait until access to vision is granted
     requestVision();
     while (!visionGranted()) {
     }
@@ -179,31 +179,63 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
   }
 
-  public synchronized Session getSession(String username, String userCredentials) {
+  public Session getSession(String username, String userCredentials) {
+    // wait until access to vision is granted
+    requestVision();
+    while (!visionGranted()) {
+    }
+
     // get corresponding stored user credentials
     String creds = credentials.get(username);
 
     // check if given credentials match stored ones
     if (creds != null && creds.equals(userCredentials)) {
       System.out.println("User \"" + username + "\" logged in");
+
+      releaseVision();
+
       return sessions.get(username);
-    } else
+    } else {
+      releaseVision();
+
       return null;
+    }
   }
 
-  public synchronized boolean addUser(String username, String userCredentials)
-      throws RemoteException {
-    if (credentials.get(username) != null)
-      // do not add repeated users
+  public synchronized void replicateUser(
+      String username, String userCredentials, Session userSession) throws RemoteException {
+    credentials.put(username, userCredentials);
+    sessions.put(username, userSession);
+    System.out.println("User \"" + username + "\" registered");
+  }
+
+  public boolean addUser(String username, String userCredentials) throws RemoteException {
+    // wait until access to vision is granted
+    requestVision();
+    while (!visionGranted()) {
+    }
+
+    // check if user already is added to not add repeated users
+    if (credentials.get(username) != null) {
+      releaseVision();
       return false;
-    else {
+    } else {
+      // create user locally
+      Session session = new SessionImpl(username, this);
+      credentials.put(username, userCredentials);
+      sessions.put(username, session);
       System.out.println("User \"" + username + "\" registered");
 
-      // store given credentials
-      credentials.put(username, userCredentials);
+      // communicate user creation to replicas
+      for (Server replica : replicas) {
+        try {
+          replica.replicateUser(username, userCredentials, session);
+        } catch (Exception e) {
+          System.err.println("ServerImpl, addUser exception: " + e.toString());
+        }
+      }
 
-      // create user session
-      sessions.put(username, new SessionImpl(username, this));
+      releaseVision();
 
       return true;
     }
@@ -226,26 +258,58 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
   }
 
   public synchronized boolean addUserToChat(String username, Chat chat) {
+    // wait until vision is granted
+    requestVision();
+    while (!visionGranted()) {
+    }
+
     // attempt to get user session corresponding to given username
     Session sess = sessions.get(username);
 
-    if (sess == null)
+    if (sess == null) {
       // do not add nonexistent users to chats
+      releaseVision();
       return false;
+    }
+
     try {
       // add chat to user session
       sess.addChat(chat);
-
+      releaseVision();
       return true;
     } catch (Exception e) {
       System.err.println("ServerImpl, addUserToChat exception: " + e.toString());
+      releaseVision();
       return false;
     }
   }
 
-  public synchronized void removeUser(String username) {
+  public synchronized void dereplicateUser(String username) throws RemoteException {
     sessions.remove(username);
     credentials.remove(username);
     System.out.println("User \"" + username + "\" was deleted");
+  }
+
+  public void removeUser(String username) {
+    // wait until vision is granted
+    requestVision();
+    while (!visionGranted()) {
+    }
+
+    // remove user locally
+    sessions.remove(username);
+    credentials.remove(username);
+    System.out.println("User \"" + username + "\" was deleted");
+
+    // comunicate user removal to replicas
+    for (Server replica : replicas) {
+      try {
+        replica.dereplicateUser(username);
+      } catch (Exception e) {
+        System.err.println("ServerImpl, removeUser exception: " + e.toString());
+      }
+    }
+
+    releaseVision();
   }
 }
