@@ -259,7 +259,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
   }
 
-  public synchronized boolean addUserToChat(String username, Chat chat) {
+  public boolean addUserToChat(String username, Chat chat) {
     // wait until vision is granted
     requestVision();
     while (!visionGranted()) {
