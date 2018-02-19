@@ -1,0 +1,45 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+
+\title{Practical Byzantine Fault Tolerance}
+\subtitle{Apresentação para a disciplina MATA88}
+\author{Gabriel Dahia, Pedro Vidal}
+\date{21 de Fevereiro de 2018}
+\institute{Universidade Federal da Bahia}
+
+\begin{document}
+
+\frame{\maketitle}
+
+\begin{frame}
+  \frametitle{Introdução}
+  \framesubtitle{Problema}
+
+  \begin{itemize}
+    \item
+      Aumento da dependência de serviços online;
+
+    \item
+      Erros em software decorrentes da complexidade do software;
+
+    \item
+      Ataques maliciosos e erros ocasionam falhas bizantinas.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Introdução}
+  \framesubtitle{Contribuição}
+
+  Um algoritmo prático para replicação de máquina de estados que tolera falhas bizantinas:
+  \begin{itemize}
+    \item
+      Garante \textit{liveness} e \textit{safety};
+
+    \item
+      Funciona em sistemas assíncronos*.
+  \end{itemize}
+\end{frame}
+
+\end{document}
