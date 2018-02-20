@@ -38,7 +38,98 @@
       Garante \textit{liveness} e \textit{safety};
 
     \item
-      Funciona em sistemas assíncronos*.
+      Funciona em sistemas assíncronos*;
+
+    \item
+      Não depende de sincronia para \textit{safety};
+
+    \item
+      Descreve otimizações que permitem uso real;
+      
+    \item
+      Performance superior à métodos anteriores.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Modelo do Sistema}
+  \framesubtitle{Comunicação}
+
+  \begin{itemize}
+    \item
+      Sistema distribuído assíncrono e nós são conectados por uma rede;
+
+    \item
+      A rede pode:
+      \begin{itemize}
+        \item
+          falhar em entregar mensagens;
+
+        \item
+          atrasá-las;
+
+        \item
+          duplicá-las; ou
+
+        \item
+          entregá-las fora de ordem.
+      \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Modelo do Sistema}
+  \framesubtitle{Falhas}
+
+  \begin{itemize}
+    \item
+      Modelo de falhas bizantinas, exceto que nós falham independentemente;
+
+    \item
+      Pode ser garantido com:
+      \begin{itemize}
+        \item
+          implementações diferentes por nó;
+
+        \item
+          sistemas operacionais diversos; e
+
+        \item
+          senhas e administradores distintos.
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Modelo do Sistema}
+  \framesubtitle{Segurança}
+
+  \begin{itemize}
+    \item
+      Criptografia para prevenir \textit{spoofing}, \textit{replays} e para detectar mensagens corrompidas;
+
+    \item
+      Assinaturas de chave-pública, códigos de autenticação de mensagens, e sumário de mensagens;
+
+    \item
+      Uso de técnicas que com alta probabilidade não podem ser subvertidas.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Modelo do Sistema}
+  \framesubtitle{Adversário}
+
+  \begin{itemize}
+      \item
+        Coordena nós comprometidos;
+
+      \item
+        Atrasa comunicação;
+
+      \item
+        Atrasa nós corretos, porém não indefinidamente.
   \end{itemize}
 \end{frame}
 
