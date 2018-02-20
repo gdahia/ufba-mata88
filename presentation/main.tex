@@ -44,7 +44,7 @@
       Não depende de sincronia para \textit{safety};
 
     \item
-      Descreve otimizações que permitem uso real;
+      Descreve otimizações que permitem uso prático;
       
     \item
       Performance superior à métodos anteriores.
@@ -90,7 +90,7 @@
       Pode ser garantido com:
       \begin{itemize}
         \item
-          implementações diferentes por nó;
+          implementações diferentes por dispositivo;
 
         \item
           sistemas operacionais diversos; e
@@ -107,10 +107,10 @@
 
   \begin{itemize}
     \item
-      Criptografia para prevenir \textit{spoofing}, \textit{replays} e para detectar mensagens corrompidas;
+      Criptografia para prevenir \textit{spoofing}, \textit{replays} e detecção de mensagens corrompidas;
 
     \item
-      Assinaturas de chave-pública, códigos de autenticação de mensagens, e sumário de mensagens;
+      Assinaturas de chave-pública, códigos de autenticação e sumário de mensagens;
 
     \item
       Uso de técnicas que com alta probabilidade não podem ser subvertidas.
@@ -130,6 +130,77 @@
 
       \item
         Atrasa nós corretos, porém não indefinidamente.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Propriedades do Serviço}
+
+  \begin{itemize}
+    \item
+      Pode implementar qualquer serviço replicado com um \textbf{estado} e algumas \textbf{operações};
+
+    \item
+      Computações deterministícas arbitrárias;
+
+    \item
+      Clientes fazem requisições de invocação ao serviço e bloqueiam esperando por uma resposta;
+
+    \item
+      Clientes e replicas são corretos se seguem o algoritmo e suas assinaturas estão protegidas.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Propriedades do Serviço}
+  \framesubtitle{Resiliência ótima}
+
+  \begin{figure}
+    \includegraphics[width=0.5\textwidth]{images/resiliencia01}<1>
+    \includegraphics[width=0.51\textwidth]{images/resiliencia02}<2>
+    \caption{Cliente faz requisição}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Propriedades do Serviço}
+  \framesubtitle{\textit{Safety}}
+
+  \begin{itemize}
+    \item
+      Funciona como um sistema centralizado, executando operações atomicamente, uma por vez;
+
+    \item
+      Depende do número de replicas que falharam;
+
+    \item
+      Não depende de sincronia;
+
+    \item
+      Independe do número de clientes comprometidos;
+
+    \item
+      Não é protegido contra clientes maliciosos;
+
+    \item
+      Controle de acesso mitiga o problema.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Propriedades do Serviço}
+  \framesubtitle{\textit{Liveness}}
+
+  \begin{itemize}
+    \item
+      Cliente eventualmente recebe resposta;
+
+    \item
+      Depende de sincronia e retransmissões;
+      
+    \item
+      Sincronia fraca: atraso não cresce mais rápido do que linearmente.
   \end{itemize}
 \end{frame}
 
