@@ -212,4 +212,78 @@
   \end{itemize}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Definições}
+
+  \begin{itemize}
+    \item
+      Máquinas de estados replicadas pelos nós;
+
+    \item
+      Cada máquina mantém o estado e implementa operações;
+
+    \item
+      Conjunto de réplicas $\mathcal{R}$, numeradas $1, ..., |\mathcal{R}| - 1$;
+
+    \item
+      $|\mathcal{R}| = 3f + 1$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Definições}
+
+  \begin{itemize}
+    \item
+      Sistema tem \textbf{visões}, $v$, consecutivas;
+
+    \item
+      Réplicas são:
+      \begin{itemize}
+        \item
+          \textbf{primária} - se $p = v \text{ mod } |\mathcal{R}|$; ou
+          
+        \item
+          \textbf{backups}.
+      \end{itemize}
+
+    \item
+      Visão muda quando primária for suspeita.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Funcionamento}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{images/algo01}<1>
+    \includegraphics[width=0.75\textwidth]{images/algo02}<2>
+    \includegraphics[width=0.75\textwidth]{images/algo03}<3>
+    \caption{Esboço do funcionamento do algoritmo}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Funcionamento}
+
+  \begin{itemize}
+    \item
+      Réplicas precisam:
+      \begin{itemize}
+        \item
+          ser determinísticas;
+
+        \item
+          começar no mesmo estado.
+      \end{itemize}
+
+    \item
+      Todas as réplicas concordam em ordem total para execução, apesar de falhas.
+  \end{itemize}
+\end{frame}
+
 \end{document}
