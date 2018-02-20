@@ -57,10 +57,10 @@
 
   \begin{itemize}
     \item
-      Sistema distribuído assíncrono e nós são conectados por uma rede;
-
+      Sistema distribuído assíncrono;
+      
     \item
-      A rede pode:
+      Nós são conectados por rede que pode:
       \begin{itemize}
         \item
           falhar em entregar mensagens;
@@ -84,10 +84,10 @@
 
   \begin{itemize}
     \item
-      Modelo de falhas bizantinas, exceto que nós falham independentemente;
-
+      Modelo de falhas bizantinas;
+      
     \item
-      Pode ser garantido com:
+      Exceção - nós falham independentemente:
       \begin{itemize}
         \item
           implementações diferentes por dispositivo;
@@ -110,10 +110,17 @@
       Criptografia para prevenir \textit{spoofing}, \textit{replays} e detecção de mensagens corrompidas;
 
     \item
-      Assinaturas de chave-pública, códigos de autenticação e sumário de mensagens;
-
-    \item
-      Uso de técnicas que com alta probabilidade não podem ser subvertidas.
+      Técnicas que com alta probabilidade não podem ser subvertidas:
+      \begin{itemize}
+        \item
+          Assinaturas de chave-pública;
+          
+        \item
+          Códigos de autenticação; e
+          
+        \item
+          Sumário de mensagens.
+      \end{itemize}
   \end{itemize}
 \end{frame}
 
@@ -129,7 +136,7 @@
         Atrasa comunicação;
 
       \item
-        Atrasa nós corretos, porém não indefinidamente.
+        Atrasa nós corretos não-indefinidamente.
   \end{itemize}
 \end{frame}
 
@@ -138,13 +145,13 @@
 
   \begin{itemize}
     \item
-      Pode implementar qualquer serviço replicado com um \textbf{estado} e algumas \textbf{operações};
+      Implementa qualquer serviço replicado com um \textbf{estado} e algumas \textbf{operações};
 
     \item
       Computações deterministícas arbitrárias;
 
     \item
-      Clientes fazem requisições de invocação ao serviço e bloqueiam esperando por uma resposta;
+      Clientes fazem requisições de invocação e bloqueiam esperando por uma resposta;
 
     \item
       Clientes e replicas são corretos se seguem o algoritmo e suas assinaturas estão protegidas.
@@ -169,10 +176,10 @@
 
   \begin{itemize}
     \item
-      Funciona como um sistema centralizado, executando operações atomicamente, uma por vez;
+      Funciona como se centralizado, executando operações atomicamente, uma por vez;
 
     \item
-      Depende do número de replicas que falharam;
+      Depende do número de replicas que falham;
 
     \item
       Não depende de sincronia;
@@ -181,10 +188,11 @@
       Independe do número de clientes comprometidos;
 
     \item
-      Não é protegido contra clientes maliciosos;
-
-    \item
-      Controle de acesso mitiga o problema.
+      Não é protegido contra clientes maliciosos:
+      \begin{itemize}
+        \item
+          Controle de acesso mitiga o problema.
+      \end{itemize}
   \end{itemize}
 \end{frame}
 
