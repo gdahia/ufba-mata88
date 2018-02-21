@@ -1,7 +1,6 @@
 \documentclass{beamer}
 
 \usepackage[utf8]{inputenc}
-\usepackage[brazil]{babel}
 \usepackage{braket}
 
 \title{Practical Byzantine Fault Tolerance}
@@ -337,6 +336,150 @@
     \only<4>{\caption{\textit{Backups} que ainda não tem, enviam requisição à primária}}
     \only<5>{\caption{Se primária não repassar ao grupo, será suspeita e visão mudará}}
   \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  \begin{itemize}
+    \item
+      Estado da réplica inclui:
+      \begin{itemize}
+        \item
+          estado do serviço;
+
+        \item
+          \textit{log} de mensagens;
+
+        \item
+          visão atual $v$.
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  \begin{itemize}
+    \item
+      Protocolo de repasse de requisição em 3 fases:
+      \begin{itemize}
+        \item
+          pré-preparação - ordenação de requisições;
+
+        \item
+          preparação - ordenação de requisições e garantia de ordenação entre visões;
+
+        \item
+          \textit{commit} - garantia de ordenação entre visões.
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{images/preprepare}
+    \only<1>{\caption{Primária envia $\braket{\braket{\text{PRE-PREPARE}, v, n, d}_{\sigma_p}{}, m}{}$}}
+    \only<2>{\caption{Primária envia $\braket{\braket{\text{PRE-PREPARE}, v, \text{\alert{$n$}}, d}_{\sigma_p}{}, m}{}$}}
+    \only<3>{\caption{Primária envia $\braket{\braket{\text{PRE-PREPARE}, v, n, \text{\alert{$d$}}}_{\sigma_p}{}, m}{}$}}
+    \only<4>{\caption{Primária envia $\braket{\braket{\text{PRE-PREPARE}, v, n, d}_{\sigma_p}{}, \text{\alert{$m$}}}{}$}}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  \textit{Backups} aceitam mensagem de pré-preparação, e as adiciona aos seus logs, se:
+  \begin{itemize}
+    \item
+      Assinaturas na requisição e da mensagem de pré-preparação estão corretas;
+      
+    \item
+      $d$ é o sumário de $m$;
+
+    \item
+      Sua visão é $v$;
+
+    \item
+      Não aceitou outra mensagem de pré-preparação na visão $v$ e número $n$ com sumário diferente;
+
+    \item
+      $h < n < H$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{images/prepare}
+    \caption{Fase de preparação, envio de $\braket{\text{PREPARE}, v, n, d, i}{}_{\sigma_i}$}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  Réplicas aceitam mensagens de preparação, e as adiciona ao seu log, se:
+  \begin{itemize}
+    \item
+      Assinaturas estão corretas;
+
+    \item
+      Sua visão é $v$;
+
+    \item
+      $h < n < H$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  $\texttt{prepared}(m, v, n, i)$ sse a réplica $i$ inseriu em seu log:
+  \begin{itemize}
+    \item
+      A requisição $m$;
+
+    \item
+      uma mensagem de pré-preparação para $m$ na visão $v$ de número $n$; e
+
+    \item
+      $2f$ mensagens distintas de preparação válidas.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  \begin{block}{Invariante}
+    Se $$\texttt{prepared}(m, v, n, i),$$ então $$\forall j \forall m' (D(m') \neq D(m) \to \lnot \texttt{prepared}(m', v, n, j)).$$
+  \end{block}
+
+  Razão:
+  \begin{itemize}
+    \item
+      Se $\texttt{prepared}(m, v, n, i)$, então $f + 1$ réplicas corretas enviaram mensagens de pré-preparação ou preparação;
+
+    \item
+      Para $\texttt{prepared}(m', v, n, j)$, precisamos de $j$ e $2f$ mensagens distintas de preparação válidas;
+
+    \item
+      Mas $f + 1$ já se comprometeram com $m, v, n, i$;
+      
+    \item
+      Logo, $|\mathcal{R}| = 3f + 1 < 2f + (f + 1) + |\{j\}|$.
+  \end{itemize}
 \end{frame}
 
 \end{document}
