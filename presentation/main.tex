@@ -284,4 +284,59 @@
   \end{itemize}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Cliente}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{images/algo01}
+    \only<1>{\caption{Envia $\braket{\text{REQUEST}, o, t, c}{}_{\sigma_c}$}}
+    \only<2>{\caption{Envia $\braket{\text{REQUEST}, \text{\alert{$o$}}, t, c}{}_{\sigma_c}$}}
+    \only<3>{\caption{Envia $\braket{\text{REQUEST}, o, \text{\alert{$t$}}, c}{}_{\sigma_c}$}}
+    \only<4>{\caption{Envia $\braket{\text{REQUEST}, o, t, \text{\alert{$c$}}}{}_{\text{\alert{$\sigma_c$}}}$}}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Cliente}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{images/client02}
+    \only<1>{\caption{Réplicas respondem $\braket{\text{REPLY}, v, t, c, i, r}{}_{\sigma_i}$}}
+    \only<2>{\caption{Réplicas respondem $\braket{\text{REPLY}, \text{\alert{$v$}}, t, c, i, r}{}_{\sigma_i}$}}
+    \only<3>{\caption{Réplicas respondem $\braket{\text{REPLY}, v, \text{\alert{$t$}}, c, i, r}{}_{\sigma_i}$}}
+    \only<4>{\caption{Réplicas respondem $\braket{\text{REPLY}, v, t, \text{\alert{$c$}}, i, r}{}_{\sigma_i}$}}
+    \only<5>{\caption{Réplicas respondem $\braket{\text{REPLY}, v, t, c, \text{\alert{$i$}}, r}{}_{\text{\alert{$\sigma_i$}}}$}}
+    \only<6>{\caption{Réplicas respondem $\braket{\text{REPLY}, v, t, c, i, \text{\alert{$r$}}}{}_{\sigma_i}$}}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Cliente}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{images/client03}
+    \caption{Cliente espera por $f+1$ respostas $\braket{\text{REPLY}, v, \text{\color{green} $t$}, c, i, \text{\color{green} $r$}}{}_{\sigma_i}$}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Cliente}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{images/client04}<1>
+    \includegraphics[width=0.75\textwidth]{images/client05}<2>
+    \includegraphics[width=0.75\textwidth]{images/client06}<3>
+    \includegraphics[width=0.75\textwidth]{images/client07}<4->
+    \only<1>{\caption{Cliente dá \textit{timeout} esperando $f+1$ respostas}}
+    \only<2>{\caption{Cliente faz \textit{broadcast} da requisição a todas as réplicas}}
+    \only<3>{\caption{Réplicas que já tem $r$ reenviam ao cliente}}
+    \only<4>{\caption{\textit{Backups} que ainda não tem, enviam requisição à primária}}
+    \only<5>{\caption{Se primária não repassar ao grupo, será suspeita e visão mudará}}
+  \end{figure}
+\end{frame}
+
 \end{document}
