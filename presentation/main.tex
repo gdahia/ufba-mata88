@@ -631,7 +631,7 @@
 
   \begin{itemize}
     \item
-      \textit{Checkpoints} e \textit{Checkpoints} estáveis;
+      \textit{Checkpoints} e \textit{checkpoints} estáveis;
 
     \item
       Réplicas mantêm:
@@ -648,6 +648,148 @@
 
     \item
       Provas são $2f + 1$ mensagens de \textit{checkpoint}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Mudanças de Visão}
+
+  \begin{itemize}
+    \item
+      Garante \textit{liveness} permitindo trocar a primária que falhar;
+
+    \item
+      São ocasionadas por \textit{timeouts};
+
+    \item
+      Esperas ocorrem quando \textit{backups} recebem requisição ainda não executada.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Mudanças de Visão}
+
+  \textit{Backup} $i$ inicia mudança de visão com mensagem $\braket{\textit{VIEW-CHANGE}, v + 1, n, \mathcal{C}, \mathcal{P}, i}{}_{\sigma_i}$.
+  \begin{itemize}
+    \item
+      $n$ é o número de sequência do \textit{checkpoint} estável mais recente que $i$ conhece;
+
+    \item
+      $\mathcal{C}$ é um conjunto de $2f + 1$ mensagens de \textit{checkpoints} válidas;
+
+    \item
+      $\mathcal{P}$ é um conjunto de conjuntos $\mathcal{P}_m$ para cada requisição $m > n$ que preparou em $i$:
+      \begin{itemize}
+        \item
+          Mensagem de pré-preparação válida; e
+        
+        \item
+          $2f$ mensagens distintas de preparação correspondentes.
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Mudanças de Visão}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{images/view-change01}<1>
+    \includegraphics[width=0.75\textwidth]{images/view-change02}<2->
+    \only<1>{\caption{Nova primária $p$ recebe $2f$ mensagens de mudança de visão}}
+    \only<2->{\caption{$p$ envia $\braket{\text{NEW-VIEW}, v + 1, \mathcal{V}, \mathcal{O}}{}_{\sigma_p}$}}
+  \end{figure}
+  \pause
+  \begin{itemize}
+    \item
+      $\mathcal{V}$ é uma prova que $2f + 1$ réplicas estão comprometidas com mudança de visão;
+
+    \item
+      $\mathcal{O}$ é um conjunto de mensagens de pré-preparação para uniformizar os estados das réplicas corretas.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Corretude - \textit{Safety}}
+
+  \textit{Safety} é garantido se réplicas corretas concordam no número de sequência das requisições que possuem \textit{commits} locais.
+  \begin{itemize}
+    \item
+      Invariante (1) garante que se $i, j$ fazem \textit{commits} locais em $v$, então concordam na ordem total;
+
+    \item
+      Resta provar para réplicas que fazem \textit{commits} locais em visões diferentes.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Corretude - \textit{Safety}}
+
+  \begin{itemize}
+    \item
+      Um \textit{commit} local de $m$ ocorre se $\texttt{committed}(m, v, n)$ - para $R_1 = f + 1$ réplicas corretas $\texttt{prepared}(m, v, n, i)$;
+
+    \item
+      Réplicas corretas não aceitam mensagens de pré-preparação para $v' > v$ sem ter recebido mensagem para entrar em $v'$;
+
+    \item
+      Qualquer mensagem para entrar em $v'$ contém mensagens de mudança de visão de $R_2 = 2f + 1$ réplicas;
+
+    \item
+      Como $R_1 + R_2 > 3f + 1$, existe $k$ correto tal que $\texttt{prepared}(m, v, n, k)$ e $k$ mudou de visão;
+
+    \item
+      Mensagem de mudança de visão de $k$ para $v'$ propaga o fato que $m$ for preparada em uma visão anterior.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Corretude - \textit{Liveness}}
+
+  Para garantir \textit{liveness}, réplicas precisam mudar de visão se não conseguem executar uma requisição.
+  \begin{itemize}
+    \item
+      É importante maximizar o tempo em que $2f + 1$ réplicas corretas estão na mesma visão;
+      
+    \item
+      É preciso garantir que esse período aumente exponecialmente.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Corretude - \textit{Liveness}}
+
+  \begin{itemize}
+    \item
+      \textit{Timers} dobram de duração entre mudanças de visão mal-sucedidas;
+
+    \item
+      Pedidos de mudança de visão com menor índice são priorizados;
+
+    \item
+      Réplicas incorretas não podem forçar mudanças de visão frequentemente. No máximo, $f$ réplicas incorretas podem ser primárias consecutivamente.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Considerações}
+  
+  \begin{itemize}
+    \item
+      Algoritmo de replicação de máquina de estados tolerante a falhas bizantinas;
+
+    \item
+      Funciona em sistemas com suposição fraca de sincronia;
+
+    \item
+      Artigo descreve otimizações que permitem seu uso na prática e resultados empíricos que fundamentam a afirmação de praticidade.
   \end{itemize}
 \end{frame}
 
