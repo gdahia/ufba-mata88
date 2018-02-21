@@ -395,13 +395,13 @@
   \frametitle{Algoritmo}
   \framesubtitle{Operação Normal}
 
-  \textit{Backups} aceitam mensagem de pré-preparação, e as adiciona aos seus logs, se:
+  \textit{Backup} aceita $\braket{\text{PRE-PREPARE}, v, n, d}{}_{\sigma_p}$, e adiciona ao log, se:
   \begin{itemize}
     \item
-      Assinaturas na requisição e da mensagem de pré-preparação estão corretas;
+      $\sigma_p$ é válida;
       
     \item
-      $d$ é o sumário de $m$;
+      $d = D(m)$;
 
     \item
       Sua visão é $v$;
@@ -428,10 +428,10 @@
   \frametitle{Algoritmo}
   \framesubtitle{Operação Normal}
 
-  Réplicas aceitam mensagens de preparação, e as adiciona ao seu log, se:
+  Réplica aceita $\braket{\text{PREPARE}, v, n, d, i}{}_{\sigma_i}$, e adiciona ao log, se:
   \begin{itemize}
     \item
-      Assinaturas estão corretas;
+      $\sigma_i$ é válida;
 
     \item
       Sua visão é $v$;
@@ -451,7 +451,7 @@
       A requisição $m$;
 
     \item
-      uma mensagem de pré-preparação para $m$ na visão $v$ de número $n$; e
+      Uma mensagem de pré-preparação para $m$ na visão $v$ de número $n$; e
 
     \item
       $2f$ mensagens distintas de preparação válidas.
@@ -462,7 +462,7 @@
   \frametitle{Algoritmo}
   \framesubtitle{Operação Normal}
 
-  \begin{block}{Invariante}
+  \begin{block}{Invariante (1)}
     Se $$\texttt{prepared}(m, v, n, i),$$ então $$\forall j \forall m' (D(m') \neq D(m) \to \lnot \texttt{prepared}(m', v, n, j)).$$
   \end{block}
 
@@ -480,6 +480,132 @@
     \item
       Logo, $|\mathcal{R}| = 3f + 1 < 2f + (f + 1) + |\{j\}|$.
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{images/prepare}
+    \only<1>{\caption{$\texttt{prepared}(m, v, n, i)$ indica começo da fase de \textit{commit}}}
+    \only<2>{\caption{Envio de $\braket{\text{COMMIT}, v, n, D(m), i}{}_{\sigma_i}$}}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  Réplica aceita $\braket{\text{COMMIT}, v, n, D(m), i}{}_{\sigma_i}$, e adiciona ao log, se:
+  \begin{itemize}
+    \item
+      $\sigma_i$ é válida;
+
+    \item
+      Sua visão é $v$;
+
+    \item
+      $h < n < H$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  $\texttt{committed}(m, v, n)$ sse $\texttt{prepared}(m, v, n, i)$ para $f + 1$ réplicas corretas.
+
+  \hspace{1.5pt}
+
+  $\texttt{committed-local}(m, v, n, i)$ sse $\texttt{prepared}(m, v, n, i)$ e $i$ aceitou $2f + 1$ \textit{commits} distintos e válidos.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  \begin{block}{Invariante (2)}
+    $$\exists i \texttt{committed-local}(m, v, n, i) \to \texttt{committed}(m, v, n)$$
+  \end{block}
+
+  Razão:
+  \begin{itemize}
+    \item
+      Se $\texttt{committed-local}(m, v, n, i)$, então $2f + 1$ réplicas enviaram mensagens de \textit{commit};
+
+    \item
+      No máximo $f$ réplicas não são corretas;
+
+    \item
+      Réplicas corretas $j$ só enviam mensagens de \textit{commit} se $\texttt{prepared}(m, v, n, j)$;
+
+    \item
+      Logo, $(2f + 1) - f = f + 1$ réplicas são tais que $\texttt{prepared}(m, v, n, j)$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  Invariante (2) e protocolo de mudança de visão garantem:
+  \begin{itemize}
+    \item
+      Ordem total de requisições com \textit{commit} local;
+
+    \item
+      Requisições com \textit{commit} local eventualmente terão \textit{commit} em pelo menos $f + 1$ réplicas.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  \begin{itemize}
+    \item
+      Réplica $i$ executa requisição de $m$ quando:
+      \begin{itemize}
+        \item
+          $\texttt{committed-local}(m, v, n, i)$; e
+          
+        \item
+          Seu estado reflete a execução sequencial de todas requisições com índice $k < n$.
+      \end{itemize}
+
+    \item
+      Garante \textit{safety};
+
+    \item
+      Depois de executar, envia resposta ao cliente;
+
+    \item
+      Descarte de requisições com \textit{timestamp} $t' < t$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+  
+  \begin{itemize}
+    \item
+      Não depende de entrega ordenada de mensagens - réplicas podem fazer \textit{commits} fora de ordem;
+
+    \item
+      Não importa desde que mensagens de pré-preparação, preparação e \textit{commit} logada até a requisição correspondente possa ser executada.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{Operação Normal}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{images/normal-case-op}
+    \caption{Resumo da Operação Normal}
+  \end{figure}
 \end{frame}
 
 \end{document}
