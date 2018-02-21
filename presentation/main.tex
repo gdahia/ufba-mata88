@@ -608,4 +608,47 @@
   \end{figure}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{\textit{Garbage Collection}}
+
+  \begin{itemize}
+    \item
+      Para garantir \textit{safety}:
+      \begin{itemize}
+        \item
+          Mensagens são mantidas até que a execução de suas requisições por $f + 1$ réplicas corretas possa ser provada;
+
+        \item
+          É necessário certificados da corretude do estado.
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algoritmo}
+  \framesubtitle{\textit{Garbage Collection}}
+
+  \begin{itemize}
+    \item
+      \textit{Checkpoints} e \textit{Checkpoints} estáveis;
+
+    \item
+      Réplicas mantêm:
+      \begin{itemize}
+        \item
+          O \textit{checkpoint} estável mais recente;
+
+        \item
+          Zero ou mais \textit{checkpoints} não-estáves;
+
+        \item
+          Estado atual.
+      \end{itemize}
+
+    \item
+      Provas são $2f + 1$ mensagens de \textit{checkpoint}.
+  \end{itemize}
+\end{frame}
+
 \end{document}
