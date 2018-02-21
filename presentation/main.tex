@@ -19,11 +19,13 @@
 
   \begin{itemize}
     \item
-      Aumento da dependência de serviços online;
+      Aumento da dependência de serviços online - ataques maliciosos;
 
+      \pause
     \item
-      Erros em software decorrentes da complexidade do software;
+      Complexidade do software crescente causa erros;
 
+      \pause
     \item
       Ataques maliciosos e erros ocasionam falhas bizantinas.
   \end{itemize}
@@ -35,20 +37,25 @@
 
   Um algoritmo prático para replicação de máquina de estados que tolera falhas bizantinas:
   \begin{itemize}
+      \pause
     \item
       Garante \textit{liveness} e \textit{safety};
 
+      \pause
     \item
       Funciona em sistemas assíncronos*;
 
+      \pause
     \item
       Não depende de sincronia para \textit{safety};
-
-    \item
-      Descreve otimizações que permitem uso prático;
       
+      \pause
     \item
-      Performance superior à métodos anteriores.
+      Performance superior à métodos anteriores;
+
+      \pause
+    \item
+      Descreve otimizações que permitem uso prático.
   \end{itemize}
 \end{frame}
 
@@ -60,6 +67,7 @@
     \item
       Sistema distribuído assíncrono;
       
+      \pause
     \item
       Nós são conectados por rede que pode:
       \begin{itemize}
@@ -90,12 +98,15 @@
     \item
       Exceção - nós falham independentemente:
       \begin{itemize}
+          \pause
         \item
           implementações diferentes por dispositivo;
 
+          \pause
         \item
           sistemas operacionais diversos; e
 
+          \pause
         \item
           senhas e administradores distintos.
       \end{itemize}
@@ -133,9 +144,11 @@
       \item
         Coordena nós comprometidos;
 
+      \pause
       \item
         Atrasa comunicação;
 
+      \pause
       \item
         Atrasa nós corretos não-indefinidamente.
   \end{itemize}
@@ -148,12 +161,15 @@
     \item
       Implementa qualquer serviço replicado com um \textbf{estado} e algumas \textbf{operações};
 
+      \pause
     \item
       Computações deterministícas arbitrárias;
 
+      \pause
     \item
       Clientes fazem requisições de invocação e bloqueiam esperando por uma resposta;
 
+      \pause
     \item
       Clientes e réplicas são corretos se seguem o algoritmo e suas assinaturas estão protegidas.
   \end{itemize}
@@ -177,17 +193,22 @@
 
   Funciona como se centralizado, executando operações atomicamente, uma por vez.
   \begin{itemize}
+      \pause
     \item
       Depende do número de réplicas que falham;
 
+      \pause
     \item
       Não depende de sincronia;
 
+      \pause
     \item
       Independe do número de clientes comprometidos;
 
+      \pause
     \item
       Não é protegido contra clientes maliciosos:
+      \pause
       \begin{itemize}
         \item
           Controle de acesso mitiga o problema.
@@ -201,9 +222,11 @@
 
   Cliente eventualmente recebe resposta.
   \begin{itemize}
+      \pause
     \item
       Depende de sincronia e retransmissões;
       
+      \pause
     \item
       Sincronia fraca: atraso não cresce mais rápido do que linearmente.
   \end{itemize}
@@ -215,14 +238,17 @@
 
   \begin{itemize}
     \item
-      Máquinas de estados replicadas pelos nós;
+      Máquina de estados replicada pelos processos;
 
+      \pause
     \item
-      Cada máquina mantém o estado e implementa operações;
+      Cada réplica mantém o estado e implementa operações;
 
+      \pause
     \item
       Conjunto de réplicas $\mathcal{R}$, numeradas $0, ..., |\mathcal{R}| - 1$;
 
+      \pause
     \item
       $|\mathcal{R}| = 3f + 1$.
   \end{itemize}
@@ -400,15 +426,19 @@
     \item
       $\sigma_p$ é válida;
       
+      \pause
     \item
       $d = D(m)$;
 
+      \pause
     \item
       Sua visão é $v$;
 
+      \pause
     \item
       Não aceitou outra mensagem de pré-preparação na visão $v$ e número $n$ com sumário diferente;
 
+      \pause
     \item
       $h < n < H$.
   \end{itemize}
@@ -447,12 +477,15 @@
 
   $\texttt{prepared}(m, v, n, i)$ sse a réplica $i$ inseriu em seu log:
   \begin{itemize}
+      \pause
     \item
       A requisição $m$;
 
+      \pause
     \item
       Uma mensagem de pré-preparação para $m$ na visão $v$ de número $n$; e
 
+      \pause
     \item
       $2f$ mensagens distintas de preparação válidas.
   \end{itemize}
@@ -468,15 +501,19 @@
 
   Razão:
   \begin{itemize}
+      \pause
     \item
       Se $\texttt{prepared}(m, v, n, i)$, então $f + 1$ réplicas corretas enviaram mensagens de pré-preparação ou preparação;
 
+      \pause
     \item
       Para $\texttt{prepared}(m', v, n, j)$, precisamos de $j$ e $2f$ mensagens distintas de preparação válidas;
 
+      \pause
     \item
-      Mas $f + 1$ já se comprometeram com $m, v, n, i$;
+      Mas $f + 1$ já se comprometeram com $m, v, n$;
       
+      \pause
     \item
       Logo, $|\mathcal{R}| = 3f + 1 < 2f + (f + 1) + |\{j\}|$.
   \end{itemize}
@@ -531,15 +568,19 @@
 
   Razão:
   \begin{itemize}
+      \pause
     \item
       Se $\texttt{committed-local}(m, v, n, i)$, então $2f + 1$ réplicas enviaram mensagens de \textit{commit};
 
+      \pause
     \item
       No máximo $f$ réplicas não são corretas;
 
+      \pause
     \item
       Réplicas corretas $j$ só enviam mensagens de \textit{commit} se $\texttt{prepared}(m, v, n, j)$;
 
+      \pause
     \item
       Logo, $(2f + 1) - f = f + 1$ réplicas são tais que $\texttt{prepared}(m, v, n, j)$.
   \end{itemize}
@@ -573,9 +614,6 @@
         \item
           Seu estado reflete a execução sequencial de todas requisições com índice $k < n$.
       \end{itemize}
-
-    \item
-      Garante \textit{safety};
 
     \item
       Depois de executar, envia resposta ao cliente;
@@ -631,8 +669,9 @@
 
   \begin{itemize}
     \item
-      \textit{Checkpoints} e \textit{checkpoints} estáveis;
+      Mecasnismo: \textit{Checkpoints} e \textit{checkpoints} estáveis;
 
+      \pause
     \item
       Réplicas mantêm:
       \begin{itemize}
@@ -640,12 +679,13 @@
           O \textit{checkpoint} estável mais recente;
 
         \item
-          Zero ou mais \textit{checkpoints} não-estáves;
+          Zero ou mais \textit{checkpoints} não-estáveis;
 
         \item
           Estado atual.
       \end{itemize}
 
+      \pause
     \item
       Provas são $2f + 1$ mensagens de \textit{checkpoint}.
   \end{itemize}
@@ -659,9 +699,11 @@
     \item
       Garante \textit{liveness} permitindo trocar a primária que falhar;
 
+      \pause
     \item
       São ocasionadas por \textit{timeouts};
 
+      \pause
     \item
       Esperas ocorrem quando \textit{backups} recebem requisição ainda não executada.
   \end{itemize}
@@ -673,12 +715,15 @@
 
   \textit{Backup} $i$ inicia mudança de visão com mensagem $\braket{\textit{VIEW-CHANGE}, v + 1, n, \mathcal{C}, \mathcal{P}, i}{}_{\sigma_i}$.
   \begin{itemize}
+      \pause
     \item
       $n$ é o número de sequência do \textit{checkpoint} estável mais recente que $i$ conhece;
 
+      \pause
     \item
       $\mathcal{C}$ é um conjunto de $2f + 1$ mensagens de \textit{checkpoints} válidas;
 
+      \pause
     \item
       $\mathcal{P}$ é um conjunto de conjuntos $\mathcal{P}_m$ para cada requisição $m > n$ que preparou em $i$:
       \begin{itemize}
@@ -706,6 +751,7 @@
     \item
       $\mathcal{V}$ é uma prova que $2f + 1$ réplicas estão comprometidas com mudança de visão;
 
+      \pause
     \item
       $\mathcal{O}$ é um conjunto de mensagens de pré-preparação para uniformizar os estados das réplicas corretas.
   \end{itemize}
@@ -720,6 +766,7 @@
     \item
       Invariante (1) garante que se $i, j$ fazem \textit{commits} locais em $v$, então concordam na ordem total;
 
+      \pause
     \item
       Resta provar para réplicas que fazem \textit{commits} locais em visões diferentes.
   \end{itemize}
@@ -733,15 +780,19 @@
     \item
       Um \textit{commit} local de $m$ ocorre se $\texttt{committed}(m, v, n)$ - para $R_1 = f + 1$ réplicas corretas $\texttt{prepared}(m, v, n, i)$;
 
+      \pause
     \item
       Réplicas corretas não aceitam mensagens de pré-preparação para $v' > v$ sem ter recebido mensagem para entrar em $v'$;
 
+      \pause
     \item
       Qualquer mensagem para entrar em $v'$ contém mensagens de mudança de visão de $R_2 = 2f + 1$ réplicas;
 
+      \pause
     \item
       Como $R_1 + R_2 > 3f + 1$, existe $k$ correto tal que $\texttt{prepared}(m, v, n, k)$ e $k$ mudou de visão;
 
+      \pause
     \item
       Mensagem de mudança de visão de $k$ para $v'$ propaga o fato que $m$ for preparada em uma visão anterior.
   \end{itemize}
@@ -769,9 +820,11 @@
     \item
       \textit{Timers} dobram de duração entre mudanças de visão mal-sucedidas;
 
+      \pause
     \item
       Pedidos de mudança de visão com menor índice são priorizados;
 
+      \pause
     \item
       Réplicas incorretas não podem forçar mudanças de visão frequentemente. No máximo, $f$ réplicas incorretas podem ser primárias consecutivamente.
   \end{itemize}
@@ -785,9 +838,11 @@
     \item
       Algoritmo de replicação de máquina de estados tolerante a falhas bizantinas;
 
+      \pause
     \item
       Funciona em sistemas com suposição fraca de sincronia;
 
+      \pause
     \item
       Artigo descreve otimizações que permitem seu uso na prática e resultados empíricos que fundamentam a afirmação de praticidade.
   \end{itemize}
